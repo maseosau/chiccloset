@@ -7,11 +7,16 @@ import { AntDesign } from '@expo/vector-icons';
 
 export default function ProductList({ products }) {
     const navigation = useNavigation();
+
+    const handleProductPress = (productId) => {
+        navigation.navigate('Product Details', { productId });
+    };
+
     return (
         <View style={styles.productList}>
             {
                 products.map((product) => (
-                    <Pressable key={product.id} style={styles.product} onPress={() => navigation.navigate("Single")}>
+                    <Pressable key={product._id} style={styles.product} onPress={()=> handleProductPress(product._id)}>
                         <Image source={product.image} alt={product.name} style={styles.productImage} />
                         <View style={styles.productContent}>
                             <Text style={styles.productName}

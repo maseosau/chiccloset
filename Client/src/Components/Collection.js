@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Image, FlatList, Pressable, StyleSheet } from "react-native";
+import { View, Text, Image, FlatList, Pressable, StyleSheet, ToastAndroid } from "react-native";
 import axios from "axios";
 import ProductList from "./ProductList";
 import Loading from "./Loading";
@@ -8,11 +8,19 @@ import { AntDesign } from '@expo/vector-icons';
 import { NAME_API } from "../config/ApiConfig";
 import Rating from "./Rating";
 import { useNavigation } from "@react-navigation/native";
+import { useAuth } from "../contexts/authContext";
+import { useCart } from "../contexts/cartContext";
 //21520766 -  Đặng Quốc Duy
 export default function Collection({ title, sort, icon }) {
     const [products, setProducts] = useState(null);
+    const { userId } = useAuth();
+    const { setQuantityInCart} = useCart();
     const navigation = useNavigation();
-    
+
+    const handleProductPress = (productId) => {
+        navigation.navigate('Product Details', { productId });
+    };
+
     const getProducts = () => {
         axios.get(NAME_API.LOCALHOST + '/products')
             .then((response) => {
@@ -21,6 +29,29 @@ export default function Collection({ title, sort, icon }) {
                 setProducts(firstSixProducts);
             })
             .catch(err => console.log(err));
+    }
+
+    const addToCart = (productId, price) => {
+        axios.post(NAME_API.LOCALHOST + '/addToCart', {
+            userId: userId,
+            productId: productId,
+            quantity: 1,
+            totalPrice: price
+        })
+            .then(response => {
+                setQuantityInCart(prev => prev + 1);
+                ToastAndroid.show(response.data.message, ToastAndroid.SHORT);
+            })
+            .catch(err => {
+                console.log(err);
+                if (err.response && err.response.data && err.response.data.message) {
+                    // If there's a meaningful error message in the response from the server
+                    ToastAndroid.show(err.response.data.message, ToastAndroid.SHORT);
+                } else {
+                    // If the error object doesn't contain a specific message, display a generic error
+                    ToastAndroid.show('Something went wrong', ToastAndroid.SHORT);
+                }
+            });
     }
 
     useEffect(() => {
@@ -38,12 +69,12 @@ export default function Collection({ title, sort, icon }) {
             <FlatList
                 data={products}
                 nestedScrollEnabled
-                keyExtractor={item => item.id.toString()}
+                keyExtractor={item => item._id.toString()}
                 scrollEnabled
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 renderItem={({ item }) => (
-                    <Pressable key={item.id} style={styles.product} onPress={() => navigation.navigate("Single")}>
+                    <Pressable key={item._id} style={styles.product} onPress={() => handleProductPress(item._id)}>
                         <Image source={{ uri: item.thumbnail }} alt={item.title} style={styles.productImage} />
                         <View style={styles.productContent}>
                             <Text style={styles.productName}
@@ -57,9 +88,11 @@ export default function Collection({ title, sort, icon }) {
                                     <Text style={styles.productPrices}>
                                         ${item.price}
                                     </Text>
-                                    <Rating value={item.rating.rate} />
+                                    <Rating value={item.rating.rate} text={`(${item.rating.rate})`} />
                                 </View>
-                                <Pressable style={styles.addToCart}>
+                                <Pressable style={styles.addToCart}
+                                    onPress={() => addToCart(item._id, item.price)}
+                                >
                                     <AntDesign name="pluscircle" size={30} color={Colors.paypal} />
                                 </Pressable>
                             </View>

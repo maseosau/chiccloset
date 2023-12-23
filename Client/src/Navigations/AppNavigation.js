@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { NavigationContainer } from '@react-navigation/native';
@@ -54,8 +54,8 @@ function HomeBottom() {
         >
             {/* Main */}
             <Tab.Screen
-                name="HomeBottom"
-                component={HomeStack}
+                name="HomeScreen"
+                component={HomeScreen}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <View style={styles.center}>
@@ -70,8 +70,8 @@ function HomeBottom() {
             />
             {/* Category */}
             <Tab.Screen
-                name="CategoryBottom"
-                component={CategoryStack}
+                name="Category"
+                component={CategoryScreen}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <View style={styles.center}>
@@ -86,8 +86,8 @@ function HomeBottom() {
             />
             {/* Cart */}
             <Tab.Screen
-                name="CartBottom"
-                component={CartStack}
+                name="CartScreen"
+                component={CartScreen}
                 options={{
                     // tabBarButton: (props) => <CustomTab {...props} />,
                     tabBarIcon: ({ focused }) => (
@@ -104,7 +104,7 @@ function HomeBottom() {
             {/* Profile */}
             <Tab.Screen
                 name="Profile"
-                component={ProfileStack}
+                component={ProfileScreen}
                 options={{
                     tabBarIcon: ({ focused }) => (
                         <View style={styles.center}>
@@ -122,56 +122,19 @@ function HomeBottom() {
 }
 const Stack = createStackNavigator();
 
-function HomeStack() {
+function StackNavigation() {
     return (
-        <Stack.Navigator>
-            <Stack.Screen name="HomeScreen" component={HomeScreen}
-                options={{
-                    headerShown: false,
-                }}
+        <Stack.Navigator >
+            <Stack.Screen name="HomeStack" component={HomeBottom} 
+            options={{
+                headerShown: false,
+            }}
             />
-            <Stack.Screen name="Single" component={ProductDetail} />
-        </Stack.Navigator>
-    )
-}
-
-function CategoryStack() {
-    return (
-        <Stack.Navigator>
-            <Stack.Screen name="CategoryScreen" component={CategoryScreen}
-                options={{
-                    headerShown: false,
-                }}
-            />
-            <Stack.Screen name="Single" component={ProductDetail} />
-        </Stack.Navigator>
-    )
-}
-
-function CartStack() {
-    return (
-        <Stack.Navigator>
-            <Stack.Screen name="CartStack" component={CartScreen}
-                options={{
-                    headerShown: false,
-                }}
-            />
+            <Stack.Screen name="Product Details" component={ProductDetail} />
             <Stack.Screen name="PaymentScreen" component={PaymentScreen} />
             <Stack.Screen name="ShippingScreen" component={ShippingScreen} />
             <Stack.Screen name="PlaceorderScreen" component={PlaceOrderScreen} />
             <Stack.Screen name="OrderScreen" component={OrderScreen} />
-        </Stack.Navigator>
-    )
-}
-
-function ProfileStack() {
-    return (
-        <Stack.Navigator>
-            <Stack.Screen name="ProfileScreen" component={ProfileScreen}
-                options={{
-                    headerShown: false,
-                }}
-            />
             <Stack.Screen name="Settings" component={SettingScreen} />
             <Stack.Screen name="Change Password" component={ChangePasswordScreen} />
         </Stack.Navigator>
@@ -179,17 +142,7 @@ function ProfileStack() {
 }
 
 export default function AppNavigation() {
-    // const [token, setToken] = useState(null);
-    const {isLoggedIn, setIsLoggedIn} = useAuth();
-
-    // useEffect(() => {
-    //     const getToken = async () => {
-    //         const retrievedToken = await retrieveToken();
-    //         setIsLoggedIn(retrievedToken);
-    //     };
-
-    //     getToken();
-    // }, [setIsLoggedIn]);
+    const { isLoggedIn, setIsLoggedIn } = useAuth();
     return (
         <NavigationContainer>
             <Stack.Navigator screenOptions={{
@@ -197,7 +150,7 @@ export default function AppNavigation() {
             }}>
                 {
                     isLoggedIn ?
-                        <Stack.Screen name="Home" component={HomeBottom} /> :
+                        <Stack.Screen name="Home" component={StackNavigation} /> :
                         <Stack.Screen name="Auth" component={UnauthenticatedNavigation} />
                 }
             </Stack.Navigator>

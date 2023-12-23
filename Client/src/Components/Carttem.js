@@ -1,97 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Pressable } from 'react-native';
 import Colors from '../color';
 import { SwipeListView } from 'react-native-swipe-list-view';
-// import NumericInput from 'react-native-numeric-input'; // Kiểm tra xem thư viện này đã được import đúng chưa
-import Icon from 'react-native-vector-icons/Ionicons'; // Đảm bảo thư viện icon đã được import
+import NumericInput from 'react-native-numeric-input';
+import Icon from 'react-native-vector-icons/Ionicons';
+import axios from 'axios';
+import Loading from './Loading';
+import { useCart } from '../contexts/cartContext';
+import { useAuth } from '../contexts/authContext';
+import { NAME_API } from '../config/ApiConfig';
 
 const CartItem = () => {
-    const [items, setItems] = useState([
-        {
-            id: 1,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-            quantity: 1,
-        },
-        {
-            id: 2,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-            quantity: 1,
-        },
-        {
-            id: 3,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-            quantity: 2,
-        },
-        {
-            id: 4,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-            quantity: 3,
-        },
-        {
-            id: 5,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-            quantity: 1,
-        },
-        {
-            id: 6,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-            quantity: 1,
-        },
-        {
-            id: 7,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-            quantity: 1,
-        },
-        {
-            id: 8,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-            quantity: 1,
-        },
-        {
-            id: 9,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-            quantity: 1,
-        },
-        {
-            id: 10,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-            quantity: 1,
-        },
-        {
-            id: 11,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-            quantity: 1,
-        },
-        {
-            id: 12,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-            quantity: 1,
-        },
-    ]);
+    const [items, setItems] = useState(null);
+    const [products, setProducts] = useState([]);
+    const { userId } = useAuth();
+    const { quantityInCart } = useCart();
+    const getCarts = () => {
+        axios.get(NAME_API.LOCALHOST + `/carts/${userId}`)
+            .then(response => {
+                setItems(response.data.carts)
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    }
 
     const updateQuantity = (index, newQuantity) => {
         const updatedItems = [...items];
@@ -106,19 +38,19 @@ const CartItem = () => {
                     <View style={styles.item}>
                         <View style={styles.cartItemImageContainer}>
                             <Image
-                                source={item.image}
-                                alt={item.name}
+                                source={{ uri: item.product.thumbnail }}
+                                alt={item.product.title}
                                 style={styles.cartItemImage}
                             />
                         </View>
                         <View style={styles.cartItemContent}>
                             <Text style={styles.cartItemName} numberOfLines={2} ellipsizeMode='tail'>
-                                {item.name}
+                                {item.product.title}
                             </Text>
                             <Text style={styles.cartItemPrice}>
-                                ${item.price}
+                                ${item.product.price}
                             </Text>
-                            {/* <NumericInput
+                            <NumericInput
                                 value={item.quantity}
                                 onChange={(value) => updateQuantity(index, value)}
                                 totalWidth={100}
@@ -132,7 +64,10 @@ const CartItem = () => {
                                 textColor={Colors.black}
                                 iconStyle={{ color: Colors.white }}
                                 rightButtonBackgroundColor={Colors.main}
-                                leftButtonBackgroundColor={Colors.main} /> */}
+                                leftButtonBackgroundColor={Colors.main} />
+                            <Text style={styles.totalPrice}>
+                                Total: ${item.product.price * item.quantity}
+                            </Text>
                         </View>
                     </View>
                 </View>
@@ -150,19 +85,45 @@ const CartItem = () => {
         )
     };
 
+    useEffect(() => {
+        getCarts();
+    }, [quantityInCart]);
+
+    useEffect(() => {
+        if (items) {
+            const productIds = items.map(item => item.product);
+    
+            Promise.all(
+                productIds.map(productId =>
+                    axios.get(`${NAME_API.LOCALHOST}/product/${productId}`)
+                )
+            )
+            .then(responses => {
+                const productsData = responses.map((response, index) => ({
+                    product: response.data.product,
+                    quantity: items[index].quantity,
+                    size: items[index].size,
+                    // totalPrice: items[index].totalPrice
+                }));
+                setProducts(productsData);
+            })
+            .catch(err => console.log(err));
+        }
+    }, [items]);
+
+
     return (
-        <View style={styles.cartItemContainer}>
-            <SwipeListView
-                rightOpenValue={-50}
-                previewRowKey='0'
-                previewOpenValue={-40}
-                previewOpenDelay={3000}
-                data={items}
-                renderHiddenItem={renderHiddenItem}
-                renderItem={renderItem}
-                showsVerticalScrollIndicator={false}
-            />
-        </View>
+        products ? <SwipeListView
+            rightOpenValue={-50}
+            previewRowKey='0'
+            previewOpenValue={-40}
+            previewOpenDelay={3000}
+            data={products}
+            keyExtractor={item => item.product._id}
+            renderHiddenItem={renderHiddenItem}
+            renderItem={renderItem}
+            showsVerticalScrollIndicator={false}
+        /> : <Loading />
     )
 };
 
@@ -173,7 +134,7 @@ export default CartItem;
 
 const styles = StyleSheet.create({
     itemContainer: {
-        marginLeft: 20,
+        marginHorizontal: 10,
         marginBottom: 15,
     },
     item: {
@@ -196,6 +157,7 @@ const styles = StyleSheet.create({
     cartItemImage: {
         width: '80%', // Giả sử hình ảnh chiếm 80% chiều rộng của cartItemImageContainer
         resizeMode: 'contain',
+        height: "100%",
     },
     cartItemContent: {
         width: '70%',
@@ -210,7 +172,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
     cartItemPrice: {
-        color: Colors.lightBlack,
+        color: Colors.red,
         fontWeight: 'bold',
     },
     iconDeleteContainer: {
@@ -222,6 +184,7 @@ const styles = StyleSheet.create({
         marginLeft: 'auto',
         justifyContent: 'center',
         alignItems: 'center',
+        marginHorizontal: 10,
     },
     iconDeletePosition: {
         alignItems: 'center',
@@ -233,4 +196,11 @@ const styles = StyleSheet.create({
     cartItemContainer: {
         marginRight: 10,
     },
+    totalPrice: {
+        position: 'absolute',
+        right: 10,
+        top: 70,
+        fontSize: 16,
+        fontWeight: 'bold',
+    }
 })

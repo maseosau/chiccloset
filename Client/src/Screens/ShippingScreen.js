@@ -79,6 +79,7 @@ import React from "react";
 import { View, Text, ScrollView, TextInput, TouchableOpacity } from "react-native";
 import Colors from "../color";
 import { useNavigation } from "@react-navigation/native";
+import Btn from "../Components/Btn";
 
 const ShippingInputs = [
   {
@@ -131,17 +132,7 @@ function ShippingScreen() {
                 />
               </View>
             ))}
-            <TouchableOpacity
-              style={{
-                backgroundColor: Colors.main,
-                paddingVertical: 10,
-                alignItems: "center",
-                marginTop: 10,
-              }} 
-              onPress={() => navigation.navigate("Payment")}
-            >
-              <Text style={{ color: Colors.white }}>CONTINUE</Text>
-            </TouchableOpacity>
+              <Btn text="CONTINUE" />
           </View>
         </ScrollView>
       </View>

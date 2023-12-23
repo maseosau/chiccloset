@@ -17,8 +17,8 @@ export default function HomeSearch() {
                     onChangeText={setKeyword}
                 />
             </View>
-            <TouchableOpacity onPress={() => navigation.navigate("Cart")}>
-                <Icon name='cart-outline' style={styles.cartIcon} />
+            <TouchableOpacity >
+                <Icon name='notifications-outline' style={styles.cartIcon} />
                 <View style={styles.badgeContainer}>
                     <Text style={styles.badgeContent}>1</Text>
                 </View>
