@@ -154,7 +154,7 @@ function CartScreen() {
                     >
                         <Text style={{ color: Colors.main }}>CHECKOUT</Text>
                     </TouchableOpacity> */}
-                    <Btn bgColor={Colors.black} color={Colors.white} text='CHECKOUT'  onPress={() => navigation.navigate("Shipping")}/>
+                    <Btn bgColor={Colors.black} color={Colors.white} text='CHECKOUT'  onPress={() => navigation.navigate("ShippingScreen")}/>
                 </View>
             </ScrollView>
         </SafeAreaView>

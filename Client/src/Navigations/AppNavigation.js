@@ -156,10 +156,26 @@ function CartStack() {
                     headerShown: false,
                 }}
             />
-            <Stack.Screen name="PaymentScreen" component={PaymentScreen} />
-            <Stack.Screen name="ShippingScreen" component={ShippingScreen} />
-            <Stack.Screen name="PlaceorderScreen" component={PlaceOrderScreen} />
-            <Stack.Screen name="OrderScreen" component={OrderScreen} />
+            <Stack.Screen name="PaymentScreen" component={PaymentScreen}
+                options={{
+                    headerShown: false,
+                }}
+            />
+            <Stack.Screen name="ShippingScreen" component={ShippingScreen}
+                options={{
+                    headerShown: false,
+                }}
+            />
+            <Stack.Screen name="PlaceorderScreen" component={PlaceOrderScreen}
+                options={{
+                    headerShown: false,
+                }}
+            />
+            <Stack.Screen name="OrderScreen" component={OrderScreen}
+                options={{
+                    headerShown: false,
+                }}
+            />
         </Stack.Navigator>
     )
 }
