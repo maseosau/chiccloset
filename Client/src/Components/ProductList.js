@@ -7,25 +7,28 @@ import { AntDesign } from '@expo/vector-icons';
 
 export default function ProductList({ products }) {
     const navigation = useNavigation();
+    const handleProductPress = (productId) => {
+        navigation.navigate('Product Details', { productId });
+    };
     return (
         <View style={styles.productList}>
             {
                 products.map((product) => (
-                    <Pressable key={product.id} style={styles.product} onPress={() => navigation.navigate("Single")}>
-                        <Image source={product.image} alt={product.name} style={styles.productImage} />
+                    <Pressable key={product.id} style={styles.product} onPress={()=> handleProductPress(product._id)}>
+                        <Image source={{uri : product.thumbnail}} alt={product.title} style={styles.productImage} />
                         <View style={styles.productContent}>
                             <Text style={styles.productName}
                                 numberOfLines={2}
                                 ellipsizeMode='tail'
                             >
-                                {product.name}
+                                {product.title}
                             </Text>
                             <View style={styles.smallContainer}>
                                 <View style={styles.priceAndRating}>
                                     <Text style={styles.productPrices}>
                                         ${product.price}
                                     </Text>
-                                    <Rating value={product.rating} />
+                                    <Rating value={product.rating.rate} />
                                 </View>
                                 <Pressable style={styles.addToCart}>
                                     <AntDesign name="pluscircle" size={30} color={Colors.paypal} />
