@@ -130,11 +130,38 @@ function StackNavigation() {
                 headerShown: false,
             }}
             />
-            <Stack.Screen name="Product Details" component={ProductDetail} />
-            <Stack.Screen name="PaymentScreen" component={PaymentScreen} />
-            <Stack.Screen name="ShippingScreen" component={ShippingScreen} />
-            <Stack.Screen name="PlaceorderScreen" component={PlaceOrderScreen} />
-            <Stack.Screen name="OrderScreen" component={OrderScreen} />
+            <Stack.Screen name="PaymentScreen" component={PaymentScreen}
+                options={{
+                    headerShown: false,
+                }}
+            />
+            <Stack.Screen name="ShippingScreen" component={ShippingScreen}
+                options={{
+                    headerShown: false,
+                }}
+            />
+            <Stack.Screen name="PlaceorderScreen" component={PlaceOrderScreen}
+                options={{
+                    headerShown: false,
+                }}
+            />
+            <Stack.Screen name="OrderScreen" component={OrderScreen}
+                options={{
+                    headerShown: false,
+                }}
+            />
+        </Stack.Navigator>
+    )
+}
+
+function ProfileStack() {
+    return (
+        <Stack.Navigator>
+            <Stack.Screen name="ProfileScreen" component={ProfileScreen}
+                options={{
+                    headerShown: false,
+                }}
+            />
             <Stack.Screen name="Settings" component={SettingScreen} />
             <Stack.Screen name="Change Password" component={ChangePasswordScreen} />
         </Stack.Navigator>
