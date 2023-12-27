@@ -73,7 +73,30 @@ class ProductController {
             });
         }
     }
+    async search(req, res, next) {
+        try {
+            const keyword = req.params.keyword;
+            
+            const products = await productsModel.find({
+                $or: [
+                  { title: { $regex: keyword, $options: 'i' } }, 
+                  { description: { $regex: keyword, $options: 'i' } }, 
+                  { category: { $regex: keyword, $options: 'i' } }, 
+                ],
+              });
 
+            res.status(200).json({
+                products: products,
+                message: 'Kết quả tìm kiếm thành công',
+            });
+        }
+        catch (error) {
+            console.error(error);
+            res.status(500).json({
+                message: 'Lỗi máy chủ nội bộ',
+            });
+        }
+    }
 }
 
 module.exports = new ProductController;

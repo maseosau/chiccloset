@@ -9,6 +9,8 @@ import { useAuth } from "../contexts/authContext";
 import { useCart } from "../contexts/cartContext";
 import axios from "axios";
 import { NAME_API } from "../config/ApiConfig";
+import ProductList from "../Components/ProductList";
+import { useNavigation } from "@react-navigation/native";
 
 function HomeScreen() {
   const { userId } = useAuth();
@@ -28,17 +30,18 @@ function HomeScreen() {
 
   const getCarts = () => {
     axios.get(NAME_API.LOCALHOST + `/carts/${userId}`)
-    .then(response => {
-      setQuantityInCart(response.data.carts.length);
-    })
-    .catch(err => {
-      console.log(err);
-    })
+      .then(response => {
+        setQuantityInCart(response.data.carts.length);
+      })
+      .catch(err => {
+        console.log(err);
+      })
   }
 
   const renderCollectionItem = ({ item }) => (
     <Collection title={item.title} sort={item.sort} icon={item.icon} />
   );
+
 
   useEffect(() => {
     getCarts();
@@ -51,7 +54,7 @@ function HomeScreen() {
         data={collections}
         renderItem={renderCollectionItem}
         keyExtractor={(item, index) => index.toString()}
-        // ListHeaderComponent={<HomeCarousel />}
+      // ListHeaderComponent={<HomeCarousel />}
       />
     </>
   );

@@ -16,36 +16,37 @@ export default function ProductDetail() {
     const route = useRoute();
     const [product, setProduct] = useState(null);
 
-    const [similarProducts, setSimilarProducts] = useState([
-        {
-            id: 1,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-        },
-        {
-            id: 2,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-        },
-        {
-            id: 3,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-        },
-        {
-            id: 4,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-        },
-    ]);
+    // const [similarProducts, setSimilarProducts] = useState([
+    //     {
+    //         id: 1,
+    //         image: require('../../assets/favicon.png'),
+    //         name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
+    //         price: 111,
+    //     },
+    //     {
+    //         id: 2,
+    //         image: require('../../assets/favicon.png'),
+    //         name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
+    //         price: 111,
+    //     },
+    //     {
+    //         id: 3,
+    //         image: require('../../assets/favicon.png'),
+    //         name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
+    //         price: 111,
+    //     },
+    //     {
+    //         id: 4,
+    //         image: require('../../assets/favicon.png'),
+    //         name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
+    //         price: 111,
+    //     },
+    // ]);
 
     const getProduct = (productId) => {
         axios.get(NAME_API.LOCALHOST + `/product/${productId}`)
             .then((response) => {
+                // console.log(response.data.product.rating.rate)
                 setProduct(response.data.product);
                 navigation.setOptions({
                     title: response.data.product.title,
@@ -112,7 +113,7 @@ export default function ProductDetail() {
                     <View style={styles.similarProductContainer}>
                         <Text style={styles.similarProducts}>Similar products</Text>
                     </View>
-                    <ProductList products={similarProducts} />
+                    {/* <ProductList products={similarProducts} /> */}
                 </ScrollView>
                 <Btn text="Add to Cart" width="100%" />
             </View>

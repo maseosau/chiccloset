@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { NavigationContainer } from '@react-navigation/native';
 import UnauthenticatedNavigation from './UnauthenticatedNavigation';
@@ -20,6 +20,8 @@ import Colors from '../color';
 import { useAuth } from '../contexts/authContext';
 import ChangePasswordScreen from '../Screens/ChangePasswordScreen';
 import CategoryScreen from '../Screens/CategoryScreen';
+import SearchScreen from '../Screens/SearchScreen';
+import { useCart } from '../contexts/cartContext';
 
 const Tab = createBottomTabNavigator();
 
@@ -41,6 +43,7 @@ const Tab = createBottomTabNavigator();
 // };
 
 function HomeBottom() {
+    const { quantityInCart } = useCart();
     return (
         <Tab.Navigator
             backBehavior="HomeBottom"
@@ -93,9 +96,19 @@ function HomeBottom() {
                     tabBarIcon: ({ focused }) => (
                         <View style={styles.center}>
                             {focused ? (
-                                <Ionicons name="cart" size={30} color={Colors.main} />
+                                <>
+                                    <Ionicons name="cart" size={30} color={Colors.main} />
+                                    <View style={styles.badgeContainer}>
+                                        <Text style={styles.badgeContent}>{quantityInCart}</Text>
+                                    </View>
+                                </>
                             ) : (
-                                <Ionicons name="cart-outline" size={24} color={Colors.black} />
+                                <>
+                                    <Ionicons name="cart-outline" size={24} color={Colors.black} />
+                                    <View style={styles.badgeContainer}>
+                                        <Text style={styles.badgeContent}>{quantityInCart}</Text>
+                                    </View>
+                                </>
                             )}
                         </View>
                     ),
@@ -125,10 +138,10 @@ const Stack = createStackNavigator();
 function StackNavigation() {
     return (
         <Stack.Navigator >
-            <Stack.Screen name="HomeStack" component={HomeBottom} 
-            options={{
-                headerShown: false,
-            }}
+            <Stack.Screen name="HomeStack" component={HomeBottom}
+                options={{
+                    headerShown: false,
+                }}
             />
             <Stack.Screen name="PaymentScreen" component={PaymentScreen}
                 options={{
@@ -149,6 +162,17 @@ function StackNavigation() {
                 options={{
                     headerShown: false,
                 }}
+            />
+            <Stack.Screen name="SearchScreen" component={SearchScreen}
+                options={{
+                    headerShown: false,
+                }}
+            />
+            <Stack.Screen name="Product Details" component={ProductDetail}
+            />
+            <Stack.Screen name="Settings" component={SettingScreen}
+            />
+            <Stack.Screen name="Change Password" component={ChangePasswordScreen}
             />
         </Stack.Navigator>
     )
@@ -195,4 +219,18 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
     },
+    badgeContainer: {
+        position: "absolute",
+        right: -5,
+        top: -5,
+        width: 16,
+        height: 16,
+        borderRadius: 8,
+        backgroundColor: Colors.red,
+    },
+    badgeContent: {
+        textAlign: "center",
+        color: Colors.white,
+        fontSize: 12,
+    }
 });

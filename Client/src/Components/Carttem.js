@@ -14,7 +14,7 @@ const CartItem = () => {
     const [items, setItems] = useState(null);
     const [products, setProducts] = useState([]);
     const { userId } = useAuth();
-    const { quantityInCart } = useCart();
+    const { quantityInCart, setQuantityInCart } = useCart();
     const getCarts = () => {
         axios.get(NAME_API.LOCALHOST + `/carts/${userId}`)
             .then(response => {
@@ -30,6 +30,22 @@ const CartItem = () => {
         updatedItems[index].quantity = newQuantity;
         setItems(updatedItems);
     };
+
+    const deleteCart = (productId) => {
+        axios.delete(NAME_API.LOCALHOST + '/deleteCart', {
+            params: {
+                userId: userId,
+                productId: productId
+            }
+        })
+            .then(response => {
+                console.log(response.data.message);
+                setQuantityInCart(prev => prev - 1);
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
 
     const renderItem = ({ item, index }) => {
         return (
@@ -75,9 +91,13 @@ const CartItem = () => {
         )
     };
 
-    const renderHiddenItem = () => {
+    const renderHiddenItem = (productId) => {
+
         return (
-            <TouchableOpacity style={styles.iconDeleteContainer}>
+            <TouchableOpacity
+                style={styles.iconDeleteContainer}
+                onPress={() => deleteCart(productId)}
+            >
                 <View style={styles.iconDeletePosition}>
                     <Icon name='trash-outline' style={styles.iconDelete} />
                 </View>
@@ -92,22 +112,22 @@ const CartItem = () => {
     useEffect(() => {
         if (items) {
             const productIds = items.map(item => item.product);
-    
+
             Promise.all(
                 productIds.map(productId =>
                     axios.get(`${NAME_API.LOCALHOST}/product/${productId}`)
                 )
             )
-            .then(responses => {
-                const productsData = responses.map((response, index) => ({
-                    product: response.data.product,
-                    quantity: items[index].quantity,
-                    size: items[index].size,
-                    // totalPrice: items[index].totalPrice
-                }));
-                setProducts(productsData);
-            })
-            .catch(err => console.log(err));
+                .then(responses => {
+                    const productsData = responses.map((response, index) => ({
+                        product: response.data.product,
+                        quantity: items[index].quantity,
+                        size: items[index].size,
+                        // totalPrice: items[index].totalPrice
+                    }));
+                    setProducts(productsData);
+                })
+                .catch(err => console.log(err));
         }
     }, [items]);
 
@@ -120,7 +140,7 @@ const CartItem = () => {
             previewOpenDelay={3000}
             data={products}
             keyExtractor={item => item.product._id}
-            renderHiddenItem={renderHiddenItem}
+            renderHiddenItem={({ item }) => renderHiddenItem(item.product._id)}
             renderItem={renderItem}
             showsVerticalScrollIndicator={false}
         /> : <Loading />
@@ -128,8 +148,6 @@ const CartItem = () => {
 };
 
 export default CartItem;
-
-// Các phần styles và các phần code khác không thay đổi
 
 
 const styles = StyleSheet.create({
@@ -155,7 +173,7 @@ const styles = StyleSheet.create({
         height: 120,
     },
     cartItemImage: {
-        width: '80%', // Giả sử hình ảnh chiếm 80% chiều rộng của cartItemImageContainer
+        width: '80%',
         resizeMode: 'contain',
         height: "100%",
     },

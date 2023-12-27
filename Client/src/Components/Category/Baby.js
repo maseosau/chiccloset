@@ -13,6 +13,7 @@ export default function Baby() {
         axios.get(NAME_API.LOCALHOST + '/products')
             .then((response) => {
                 const classifiedProducts = response.data.products.filter(item => item.category === 'Trẻ em');
+                // console.log(classifiedProducts);
                 setProducts(classifiedProducts);
             })
             .catch(err => console.log(err));
