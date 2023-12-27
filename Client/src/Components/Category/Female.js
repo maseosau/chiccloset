@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TouchableOpacity, StyleSheet, Text, ScrollView, Pressable, Image, View } from 'react-native';
+import { TouchableOpacity, StyleSheet, Text, ScrollView, Pressable, Image, View, ActivityIndicator } from 'react-native';
 import Colors from '../../color';
 import ProductList from "../ProductList";
 import Products from "../../data/Products";
@@ -8,6 +8,7 @@ import { NAME_API } from "../../config/ApiConfig"
 
 export default function Female() {
     const [products, setProducts] = useState(null);
+    const [loading, setLoading] = useState(true);
     
     const getProducts = () => {
         axios.get(NAME_API.LOCALHOST + '/products')
@@ -15,12 +16,22 @@ export default function Female() {
                 const classifiedProducts = response.data.products.filter(item => item.category === 'Nữ');
                 setProducts(classifiedProducts);
             })
-            .catch(err => console.log(err));
+            .catch(err => console.log(err))
+            .finally(() => {
+              setLoading(false);
+            });
     }
 
     useEffect(() => {
         getProducts();
     }, [])
+    if (loading) {
+        return (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <ActivityIndicator size="large" color={Colors.main} />
+          </View>
+        );
+    } 
     return (
         <ScrollView style={styles.productListContainer}>
             <ProductList products={products || []} />

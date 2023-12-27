@@ -14,7 +14,7 @@ export default function ProductList({ products }) {
         <View style={styles.productList}>
             {
                 products.map((product) => (
-                    <Pressable key={product.id} style={styles.product} onPress={()=> handleProductPress(product._id)}>
+                    <Pressable key={product._id} style={styles.product} onPress={()=> handleProductPress(product._id)}>
                         <Image source={{uri : product.thumbnail}} alt={product.title} style={styles.productImage} />
                         <View style={styles.productContent}>
                             <Text style={styles.productName}
