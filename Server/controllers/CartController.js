@@ -3,7 +3,7 @@ const cartModel = require('../models/cartModel');
 class CartController {
     async addToCart(req, res, next) {
         try {
-            const { userId, productId, quantity, totalPrice } = req.body;
+            const { userId, productId, quantity, totalPrice, size } = req.body;
 
             const existsProduct = await cartModel.find({ product: productId, user: userId });
 
@@ -17,8 +17,11 @@ class CartController {
                 user: userId,
                 product: productId,
                 quantity: quantity,
-                totalPrice: totalPrice
+                totalPrice: totalPrice,
+                size: size
             });
+
+            console.log(newCartItem);
 
             await newCartItem.save();
 
@@ -38,13 +41,8 @@ class CartController {
         try {
             const userId = req.params.userId;
 
-            const carts = await cartModel.find({ user: userId });
-            // if (carts.length === 0) {
-            //     return res.status(404).json({
-            //         message: 'Carts not found',
-            //     });
-            // }
-
+            // const carts = await cartModel.find({ user: userId });
+            const carts = await cartModel.find({ user: userId }).populate('product');
             res.status(200).json({
                 message: 'Carts retrieved successfully',
                 carts: carts,

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity, SafeAreaView } from "react-native"; // Import necessary components from react-native
 import Colors from "../color";
 import CartEmpty from "../Components/CartEmpty";
@@ -9,6 +9,7 @@ import { useCart } from "../contexts/cartContext";
 
 function CartScreen() {
     const navigation = useNavigation();
+    const [totalPrice, setTotalPrice] = useState(0);
     const { quantityInCart } = useCart();
     return (
         quantityInCart === 0 ? 
@@ -24,7 +25,7 @@ function CartScreen() {
                     Cart
                 </Text>
             </View>
-            <CartItem />
+            <CartItem setTotalPrice={setTotalPrice}/>
             <View
                 style={{
                     marginTop: 5,
@@ -55,7 +56,7 @@ function CartScreen() {
                             fontWeight: "bold",
                         }}
                     >
-                        $356
+                        ${totalPrice.toFixed(2)}
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -64,7 +65,7 @@ function CartScreen() {
                 marginTop: 10,
                 paddingVertical: 10,
                 alignItems: "center",
-                marginBottom: 25,
+                // marginBottom: 25,
             }}
             >
                 <Btn bgColor={Colors.black} color={Colors.white} text='CHECKOUT' onPress={() => navigation.navigate("ShippingScreen")} />

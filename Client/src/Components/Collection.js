@@ -40,7 +40,7 @@ export default function Collection({ title, sort, icon }) {
         if (selectedProduct) {
             const selectedItem = products.find(item => item._id === selectedProduct);
             if (selectedItem) {
-                addToCart(selectedItem._id, selectedItem.price);
+                addToCart(selectedItem);
                 setModalVisible(false);
             }
         }
@@ -56,12 +56,12 @@ export default function Collection({ title, sort, icon }) {
             .catch(err => console.log(err));
     }
 
-    const addToCart = (productId, price) => {
+    const addToCart = (product) => {
         axios.post(NAME_API.LOCALHOST + '/addToCart', {
             userId: userId,
-            productId: productId,
+            productId: product._id,
             quantity: quantity,
-            totalPrice: price,
+            totalPrice: product.price * quantity,
             size: size
         })
             .then(response => {

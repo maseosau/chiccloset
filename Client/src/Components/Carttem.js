@@ -10,19 +10,27 @@ import { useCart } from '../contexts/cartContext';
 import { useAuth } from '../contexts/authContext';
 import { NAME_API } from '../config/ApiConfig';
 
-const CartItem = () => {
+const CartItem = ({setTotalPrice}) => {
     const [items, setItems] = useState(null);
-    const [products, setProducts] = useState([]);
     const { userId } = useAuth();
     const { quantityInCart, setQuantityInCart } = useCart();
     const getCarts = () => {
         axios.get(NAME_API.LOCALHOST + `/carts/${userId}`)
             .then(response => {
                 setItems(response.data.carts)
+                // console.log(response.data.carts[0].product);
             })
             .catch(err => {
-                console.log(err);
+                console.log("Error get carts " + err);
             })
+    }
+
+    const calculateTotalPrice = () => {
+        let totalPrice = 0;
+        items.forEach(item => {
+            totalPrice += item.product.price * item.quantity 
+        })
+        setTotalPrice(totalPrice);
     }
 
     const updateQuantity = (index, newQuantity) => {
@@ -43,7 +51,7 @@ const CartItem = () => {
                 setQuantityInCart(prev => prev - 1);
             })
             .catch(err => {
-                console.log(err)
+                console.log("Error delete cart" + err)
             })
     }
 
@@ -66,6 +74,9 @@ const CartItem = () => {
                             <Text style={styles.cartItemPrice}>
                                 ${item.product.price}
                             </Text>
+                            <Text style={styles.cartItemSize}>
+                                Size: {item.size}
+                            </Text>
                             <NumericInput
                                 value={item.quantity}
                                 onChange={(value) => updateQuantity(index, value)}
@@ -82,7 +93,7 @@ const CartItem = () => {
                                 rightButtonBackgroundColor={Colors.main}
                                 leftButtonBackgroundColor={Colors.main} />
                             <Text style={styles.totalPrice}>
-                                Total: ${item.product.price * item.quantity}
+                                Total: ${(item.product.price * item.quantity).toFixed(2)}
                             </Text>
                         </View>
                     </View>
@@ -92,7 +103,6 @@ const CartItem = () => {
     };
 
     const renderHiddenItem = (productId) => {
-
         return (
             <TouchableOpacity
                 style={styles.iconDeleteContainer}
@@ -110,35 +120,17 @@ const CartItem = () => {
     }, [quantityInCart]);
 
     useEffect(() => {
-        if (items) {
-            const productIds = items.map(item => item.product);
-
-            Promise.all(
-                productIds.map(productId =>
-                    axios.get(`${NAME_API.LOCALHOST}/product/${productId}`)
-                )
-            )
-                .then(responses => {
-                    const productsData = responses.map((response, index) => ({
-                        product: response.data.product,
-                        quantity: items[index].quantity,
-                        size: items[index].size,
-                        // totalPrice: items[index].totalPrice
-                    }));
-                    setProducts(productsData);
-                })
-                .catch(err => console.log(err));
-        }
+        if (items)
+            calculateTotalPrice();
     }, [items]);
 
-
     return (
-        products ? <SwipeListView
+        items ? <SwipeListView
             rightOpenValue={-50}
             previewRowKey='0'
             previewOpenValue={-40}
             previewOpenDelay={3000}
-            data={products}
+            data={items}
             keyExtractor={item => item.product._id}
             renderHiddenItem={({ item }) => renderHiddenItem(item.product._id)}
             renderItem={renderItem}
@@ -173,7 +165,7 @@ const styles = StyleSheet.create({
         height: 120,
     },
     cartItemImage: {
-        width: '80%',
+        width: '100%',
         resizeMode: 'contain',
         height: "100%",
     },
