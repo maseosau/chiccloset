@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { TouchableOpacity, StyleSheet, Text, ScrollView, Pressable, Image, View } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, Pressable, Image, View } from 'react-native';
 import Colors from '../color';
 import { useNavigation } from "@react-navigation/native";
 import Rating from './Rating';
@@ -18,7 +18,7 @@ export default function ProductList({ products }) {
                         <Image source={{uri : product.thumbnail}} alt={product.title} style={styles.productImage} />
                         <View style={styles.productContent}>
                             <Text style={styles.productName}
-                                numberOfLines={2}
+                                numberOfLines={1}
                                 ellipsizeMode='tail'
                             >
                                 {product.title}
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.subGreen,
     },
     product: {
-        width: '49%',
+        width: "49%",
         backgroundColor: Colors.white,
         borderRadius: 10,
         paddingVertical: 15,

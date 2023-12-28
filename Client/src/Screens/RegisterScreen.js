@@ -78,10 +78,11 @@ export default function RegisterScreen() {
             password: password,
         })
         .then((response) => {
-            if (response.status === 200) {
+            if (response.status === 201) {
                 // Registration successful, navigate to login screen or perform necessary actions
-                Alert.alert('Register successfully', 'You can now log in.');
-                // navigation.navigate('Login'); // Assuming 'navigation' is available
+                Alert.alert('Register successfully', 'You can now log in.', [
+                    { text: 'OK', onPress: () => navigation.navigate('LoginScreen') }
+                ]);
             } else {
                 Alert.alert('Register failed', response.data.message || 'Unknown error occurred');
             }

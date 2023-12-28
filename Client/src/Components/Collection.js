@@ -158,7 +158,7 @@ export default function Collection({ title, sort, icon }) {
                             <Image source={{ uri: item.thumbnail }} alt={item.title} style={styles.productImage} />
                             <View style={styles.productContent}>
                                 <Text style={styles.productName}
-                                    numberOfLines={2}
+                                    numberOfLines={1}
                                     ellipsizeMode='tail'
                                 >
                                     {item.title}
@@ -192,7 +192,7 @@ export default function Collection({ title, sort, icon }) {
 
 const styles = StyleSheet.create({
     product: {
-        width: 200,
+        width: 195,
         backgroundColor: Colors.white,
         borderRadius: 10,
         paddingVertical: 15,

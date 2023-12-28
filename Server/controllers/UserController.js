@@ -55,7 +55,7 @@ class UserControllers {
             }
 
             const hashPassword = await bcryptjs.hash(password, 8);
-            const newUser = new userModel({ email: email, username: username, fullname: fullname, password: hashPassword, phoneNumber: '', address: '',  });
+            const newUser = new userModel({ email: email, username: username, fullname: fullname, password: hashPassword, phoneNumber: '', address: '', image: ''});
 
             await newUser.save();
 
@@ -74,7 +74,7 @@ class UserControllers {
     async updateInfomation(req, res, next) {
         try {
             const userId = req.params.userId;
-            const { phoneNumber, address, fullname, email, oldPassword, newPassword } = req.body;
+            const { image, phoneNumber, address, fullname, email, oldPassword, newPassword } = req.body;
 
             const user = await userModel.findById(userId);
 
@@ -85,6 +85,10 @@ class UserControllers {
             }
 
             // Cập nhật thông tin của user nếu được cung cấp
+            if (image || image === ''){
+                user.image = image;
+            }
+
             if (phoneNumber) {
                 user.phoneNumber = phoneNumber;
             }

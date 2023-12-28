@@ -106,7 +106,7 @@ const Profile = () => {
       return Alert.alert("Updated Failed", "Invalid Email")
     }
 
-    axios.post(NAME_API.LOCALHOST + `/update/${userId}`, {
+    axios.put(NAME_API.LOCALHOST + `/update/${userId}`, {
       fullname: fullname,
       email: email,
       address: address,
