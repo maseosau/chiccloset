@@ -9,7 +9,7 @@ import PlaceOrderModel from "../Components/PlaceOrderModel";
 function PlaceOrderScreen() {
     return (
         <View style={{ backgroundColor: Colors.subGreen, flex: 1, paddingTop: 20 }}>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ paddingRight: 20,}} >
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ paddingRight: 20, flex:1}} >
                 <OrderInfo
                     title="CUSTOMER"
                     subTitle="Admin Doe"
@@ -43,7 +43,7 @@ function PlaceOrderScreen() {
             </ScrollView>
             {/* Order Item */}
             <View style={{ paddingHorizontal: 6, flex: 1, paddingBottom: 3 }}>
-                <Text style={{ fontWeight: "bold", fontSize: 15, marginBottom: 4 }}>
+                <Text style={{ fontWeight: "bold", fontSize: 20, marginBottom: 4 }}>
                     PRODUCTS
                 </Text>
                 <OrderItem />

@@ -1,161 +1,84 @@
-// import { Box, HStack, ScrollView, Text } from "native-base";
-// import React from "react";
-// import { Pressable } from "react-native";
-// import Colors from "../../color";
-
-// const Orders = () => {
-//     return (
-//         <Box h="full" bg={Colors.white} pt={5}>
-//             <ScrollView showsVerticalScrollIndicator={false}>
-//                 {/* Paid Order */}
-//                 <Pressable>
-//                     <HStack
-//                         space={4}
-//                         justifyContent="space-between"
-//                         alignItems="center"
-//                         bg={Colors.deepGray}
-//                         py={5} 
-//                         px={2}
-//                     >
-//                         <Text fontSize={9} color={Colors.blue} isTruncated>
-//                             64645383844766557
-//                         </Text>
-//                         <Text fontSize={12} bold color={Colors.black} isTruncated>
-//                             PAID
-//                         </Text>
-//                         <Text fontSize={11} italic color={Colors.black} isTruncated>
-//                             Dec 12 2023
-//                         </Text>
-//                         <Button 
-//                             px={7} 
-//                             py={1.5}
-//                             rounded={50}
-//                             bg={Colors.main} 
-//                             _text={{
-//                                 color: Colors.white,
-//                             }}
-//                             _pressed={{
-//                                 bg: Colors.main,
-//                             }}
-//                         >
-//                             $456 
-//                         </Button>
-//                     </HStack>
-//                 </Pressable>
-//                 {/* Not Paid */}
-//                 <Pressable>
-//                     <HStack
-//                         space={4}
-//                         justifyContent="space-between"
-//                         alignItems="center"
-//                         py={5} 
-//                         px={2}
-//                     >
-//                         <Text fontSize={9} color={Colors.blue} isTruncated>
-//                             64645383844766557
-//                         </Text>
-//                         <Text fontSize={12} bold color={Colors.black} isTruncated>
-//                             NOT PAID
-//                         </Text>
-//                         <Text fontSize={11} italic color={Colors.black} isTruncated>
-//                             Jan 12 2023
-//                         </Text>
-//                         <Button 
-//                             px={7} 
-//                             py={1.5}
-//                             rounded={50}
-//                             bg={Colors.red} 
-//                             _text={{
-//                                 color: Colors.white,
-//                             }}
-//                             _pressed={{
-//                                 bg: Colors.red,
-//                             }}
-//                         >
-//                             $23
-//                         </Button>
-//                     </HStack>
-//                 </Pressable>
-//             </ScrollView>
-//         </Box >
-//     );
-// };
-
-// export default Orders;
-
-import React from "react";
-import { View, Text, ScrollView, Pressable } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, ScrollView, Pressable, ActivityIndicator } from "react-native";
 import Colors from "../../color";
+import { useAuth } from "../../contexts/authContext";
+import axios from "axios";
+import { NAME_API } from "../../config/ApiConfig";
+
+// Hàm chuyển đổi và định dạng ngày tháng
+const formatDate = (dateString) => {
+    const dateObject = new Date(dateString);
+    const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
+    return dateObject.toLocaleDateString(undefined, options);
+};
 
 const Orders = () => {
+    const { userId } = useAuth();
+    const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const getOrderInfomation = async () => {
+        try {
+            const response = await axios.get(`${NAME_API.LOCALHOST}/getOrderInformation/${userId}`);
+            setOrders(response.data.orders);
+            setLoading(false);
+            console.log(orders);
+        } catch (error) {
+            console.error(error);
+            setLoading(false);
+            throw error; // Xử lý lỗi ở mức component hoặc nơi gọi hàm getInfomation
+        }
+    };
+    useEffect(() => {
+        getOrderInfomation(); console.log(orders);
+    }, []);
+
+    if (loading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color={Colors.main} />
+            </View>
+        );
+    }
+
     return (
         <View style={{ height: "100%", backgroundColor: Colors.white, paddingVertical: 30, paddingHorizontal: 20 }}>
             <ScrollView showsVerticalScrollIndicator={false}>
-                {/* Paid Order */}
-                <Pressable>
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            backgroundColor: Colors.deepGray,
-                            paddingVertical: 10,
-                            paddingHorizontal: 2,
-                        }}
-                    >
-                        <Text style={{ fontSize: 10, color: Colors.blue }} numberOfLines={1}>
-                            64645383844766557
-                        </Text>
-                        <Text style={{ fontSize: 15, fontWeight: "bold", color: Colors.black }} numberOfLines={1}>
-                            PAID
-                        </Text>
-                        <Text style={{ fontSize: 13, fontStyle: "italic", color: Colors.black }} numberOfLines={1}>
-                            Dec 13 2023
-                        </Text>
-                        <Pressable
-                            style={{
-                                paddingHorizontal: 7,
-                                paddingVertical: 1.5,
-                                borderRadius: 50,
-                                backgroundColor: Colors.main,
-                            }}
-                        >
-                            <Text style={{ color: Colors.white }}>$456</Text>
+                {
+                    orders.map((order, index) => (
+                        <Pressable key={index}>
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    backgroundColor: order.paid ? Colors.deepGray : Colors.white, // Thay đổi màu nền dựa trên trạng thái paid
+                                    paddingVertical: 10,
+                                    paddingHorizontal: 2,
+                                }}
+                            >
+                                <Text style={{ fontSize: 10, color: Colors.blue }} numberOfLines={1}>
+                                    {order._id}
+                                </Text>
+                                <Text style={{ fontSize: 15, fontWeight: "bold", color: order.paid ? Colors.main : Colors.red }} numberOfLines={1}>
+                                    {order.paid ? "PAID" : "NOT PAID"}
+                                </Text>
+                                <Text style={{ fontSize: 13, fontStyle: "italic", color: Colors.black }} numberOfLines={1}>
+                                    {formatDate(order.orderDate)}
+                                </Text>
+                                <Pressable
+                                    style={{
+                                        paddingHorizontal: 7,
+                                        paddingVertical: 1.5,
+                                        borderRadius: 50,
+                                        backgroundColor: order.paid ? Colors.main : Colors.red,
+                                    }}
+                                >
+                                    <Text style={{ color: Colors.white }}>${order.totalPrice}</Text>
+                                </Pressable>
+                            </View>
                         </Pressable>
-                    </View>
-                </Pressable>
-                {/* Not Paid */}
-                <Pressable>
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            paddingVertical: 10,
-                            paddingHorizontal: 2,
-                        }}
-                    >
-                        <Text style={{ fontSize: 10, color: Colors.blue }} numberOfLines={1}>
-                            64645383844766557
-                        </Text>
-                        <Text style={{ fontSize: 15, fontWeight: "bold", color: Colors.black }} numberOfLines={1}>
-                            NOT PAID
-                        </Text>
-                        <Text style={{ fontSize: 13, fontStyle: "italic", color: Colors.black }} numberOfLines={1}>
-                            Dec 12 2023
-                        </Text>
-                        <Pressable
-                            style={{
-                                paddingHorizontal: 7,
-                                paddingVertical: 1.5,
-                                borderRadius: 50,
-                                backgroundColor: Colors.red,
-                            }}
-                        >
-                            <Text style={{ color: Colors.white }}>$23</Text>
-                        </Pressable>
-                    </View>
-                </Pressable>
+                    ))
+                }
             </ScrollView>
         </View>
     );
