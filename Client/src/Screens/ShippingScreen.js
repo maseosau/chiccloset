@@ -3,22 +3,21 @@ import { View, Text, ScrollView, TextInput, TouchableOpacity } from "react-nativ
 import Colors from "../color";
 import { useNavigation } from "@react-navigation/native";
 import Btn from "../Components/Btn";
+import { useAuth } from "../contexts/authContext";
+import axios from "axios";
+import { NAME_API } from "../config/ApiConfig";
 
 const ShippingInputs = [
   {
-    label: "ENTER CITY",
+    label: "Consignee Name",
     type: "text",
   },
   {
-    label: "ENTER COUNTRY",
+    label: "Phone Number",
     type: "text",
   },
   {
-    label: "ENTER POSTAL CODE",
-    type: "text",
-  },
-  {
-    label: "ENTER ADDRESS",
+    label: "Address",
     type: "text",
   },
 ];
@@ -42,30 +41,22 @@ function ShippingScreen() {
                 <Text style={{ fontSize: 12, fontWeight: "bold" }}>{input.label}</Text>
                 <TextInput
                   style={{
-                    borderWidth: 0.2,
-                    borderColor: Colors.main,
+                    borderWidth: 0.5,
                     backgroundColor: Colors.subGreen,
-                    paddingVertical: 10,
-                    paddingHorizontal: 10,
+                    borderColor: Colors.main,
+                    padding: 10,
                     color: Colors.main,
-                    marginTop: 5,
+                    fontSize: 17,
+                    borderRadius: 10,
                   }}
                   keyboardType={input.type}
                   underlineColorAndroid="transparent" // for Android
                 />
               </View>
             ))}
-            <TouchableOpacity
-              style={{
-                backgroundColor: Colors.main,
-                paddingVertical: 10,
-                alignItems: "center",
-                marginTop: 10,
-              }} 
+            <Btn text='CONTINUE' bgColor={Colors.main} color={Colors.white}
               onPress={() => navigation.navigate("PaymentScreen")}
-            >
-              <Text style={{ color: Colors.white }}>CONTINUE</Text>
-            </TouchableOpacity>
+            />
           </View>
         </ScrollView>
       </View>

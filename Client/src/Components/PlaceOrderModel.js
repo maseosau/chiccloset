@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, View, Text, Pressable } from "react-native";
+import { Modal, View, Text, StyleSheet } from "react-native";
 import Colors from "../color";
 import Btn from "./Btn";
 import { useNavigation } from "@react-navigation/native";
@@ -35,8 +35,8 @@ const PlaceOrderModel = () => {
     <View>
       <Btn
         bgColor={Colors.main}
-        color= {Colors.white}
-        text= "SHOW TOTAL"
+        color={Colors.white}
+        text="SHOW TOTAL"
         onPress={() => setShowModel(true)}
       />
 
@@ -80,25 +80,27 @@ const PlaceOrderModel = () => {
               ))}
             </View>
 
-            <Btn
-              bgColor={Colors.main}
-              color= {Colors.white}
-              text= "PLACE AN ORDER"
-              // onPress={() => }
-              onPress={() => {
-                setShowModel(false);
-                navigation.navigate("OrderScreen");
-              }}
-            />
-            <Btn
-              bgColor={Colors.paypal}
-              color= {Colors.white}
-              text= "CANCEL"
-              // onPress={() => }
-              onPress={() => {
-                setShowModel(false);
-              }}
-            />
+            <View style={styles.buttonInTotal}>
+              <Btn
+                bgColor={Colors.main}
+                color={Colors.white}
+                text="PLACE AN ORDER"
+                // onPress={() => }
+                onPress={() => {
+                  setShowModel(false);
+                  navigation.navigate("OrderScreen");
+                }}
+              />
+              <Btn
+                bgColor={Colors.paypal}
+                color={Colors.white}
+                text="CANCEL"
+                // onPress={() => }
+                onPress={() => {
+                  setShowModel(false);
+                }}
+              />
+            </View>
           </View>
         </View>
       </Modal>
@@ -107,3 +109,9 @@ const PlaceOrderModel = () => {
 };
 
 export default PlaceOrderModel;
+
+const styles = StyleSheet.create({
+  buttonInTotal:{
+    flexDirection: "row",
+  }
+})

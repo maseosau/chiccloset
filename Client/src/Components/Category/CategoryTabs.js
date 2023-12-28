@@ -43,7 +43,7 @@ const CategoryTabs = () => {
       onIndexChange={setIndex}
       initialLayout={initialLayout}
       renderTabBar={renderTabBar}
-      style={{backgroundColor: Colors.subGreen}}
+      style={{backgroundColor: Colors.subGreen, paddingBottom: 20}}
     />
   );
 };

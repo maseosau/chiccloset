@@ -9,7 +9,8 @@ export default function OrderInfo({icon, title, subTitle, text, success, danger}
     return (
         <View style={styles.orderInfoContainer}>
             <View style={styles.orderInfoIconContainer}>
-                <Icon name={icon} style={styles.orderInfoIcon} />
+                {/* <Icon name={icon} style={styles.orderInfoIcon} /> */}
+                {icon}
             </View>
             <Text style={styles.orderInfoTitle}>
                 {title}
