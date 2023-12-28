@@ -28,7 +28,7 @@ export default function ProductList({ products }) {
                                     <Text style={styles.productPrices}>
                                         ${product.price}
                                     </Text>
-                                    <Rating value={product.rating.rate} />
+                                    <Rating value={product.rating.rate} text={`(${product.rating.rate})`}/>
                                 </View>
                                 <Pressable style={styles.addToCart}>
                                     <AntDesign name="pluscircle" size={30} color={Colors.paypal} />
@@ -47,11 +47,11 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         flexWrap: 'wrap',
         flexDirection: 'row',
-        paddingHorizontal: 10,
+        paddingHorizontal: 5,
         backgroundColor: Colors.subGreen,
     },
     product: {
-        width: '47%',
+        width: '49%',
         backgroundColor: Colors.white,
         borderRadius: 10,
         paddingVertical: 15,
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     },
     productName: {
         fontWeight: 'bold',
-        fontSize: 10,
+        fontSize: 13,
         marginTop: 5,
     },
     smallContainer: {

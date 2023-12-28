@@ -3,10 +3,16 @@ import { TextInput, StyleSheet, Text, View, TouchableOpacity } from "react-nativ
 import Colors from "../color";
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
 
 export default function HomeSearch() {
     const [keyword, setKeyword] = useState('');
     const navigation = useNavigation();
+    const handleSearch = () => {
+        if (keyword.trim() !== '')
+            navigation.navigate('SearchScreen', { keyword });
+    }
+
     return (
         <View style={styles.searchContainer}>
             <View style={styles.searchBar}>
@@ -15,10 +21,11 @@ export default function HomeSearch() {
                     style={styles.searchInput}
                     value={keyword}
                     onChangeText={setKeyword}
+                    onSubmitEditing={handleSearch}
                 />
             </View>
-            <TouchableOpacity onPress={() => navigation.navigate("Cart")}>
-                <Icon name='cart-outline' style={styles.cartIcon} />
+            <TouchableOpacity >
+                <Icon name='notifications-outline' style={styles.cartIcon} />
                 <View style={styles.badgeContainer}>
                     <Text style={styles.badgeContent}>1</Text>
                 </View>

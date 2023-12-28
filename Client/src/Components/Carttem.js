@@ -1,103 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Pressable } from 'react-native';
 import Colors from '../color';
 import { SwipeListView } from 'react-native-swipe-list-view';
-// import NumericInput from 'react-native-numeric-input'; // Kiểm tra xem thư viện này đã được import đúng chưa
-import Icon from 'react-native-vector-icons/Ionicons'; // Đảm bảo thư viện icon đã được import
+import NumericInput from 'react-native-numeric-input';
+import Icon from 'react-native-vector-icons/Ionicons';
+import axios from 'axios';
+import Loading from './Loading';
+import { useCart } from '../contexts/cartContext';
+import { useAuth } from '../contexts/authContext';
+import { NAME_API } from '../config/ApiConfig';
 
-const CartItem = () => {
-    const [items, setItems] = useState([
-        {
-            id: 1,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-            quantity: 1,
-        },
-        {
-            id: 2,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-            quantity: 1,
-        },
-        {
-            id: 3,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-            quantity: 2,
-        },
-        {
-            id: 4,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-            quantity: 3,
-        },
-        {
-            id: 5,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-            quantity: 1,
-        },
-        {
-            id: 6,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-            quantity: 1,
-        },
-        {
-            id: 7,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-            quantity: 1,
-        },
-        {
-            id: 8,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-            quantity: 1,
-        },
-        {
-            id: 9,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-            quantity: 1,
-        },
-        {
-            id: 10,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-            quantity: 1,
-        },
-        {
-            id: 11,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-            quantity: 1,
-        },
-        {
-            id: 12,
-            image: require('../../assets/favicon.png'),
-            name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-            price: 111,
-            quantity: 1,
-        },
-    ]);
+const CartItem = ({setTotalPrice}) => {
+    const [items, setItems] = useState(null);
+    const { userId } = useAuth();
+    const { quantityInCart, setQuantityInCart } = useCart();
+    const getCarts = () => {
+        axios.get(NAME_API.LOCALHOST + `/carts/${userId}`)
+            .then(response => {
+                setItems(response.data.carts)
+                // console.log(response.data.carts[0].product);
+            })
+            .catch(err => {
+                console.log("Error get carts " + err);
+            })
+    }
+
+    const calculateTotalPrice = () => {
+        let totalPrice = 0;
+        items.forEach(item => {
+            totalPrice += item.product.price * item.quantity 
+        })
+        setTotalPrice(totalPrice);
+    }
 
     const updateQuantity = (index, newQuantity) => {
         const updatedItems = [...items];
         updatedItems[index].quantity = newQuantity;
         setItems(updatedItems);
     };
+
+    const deleteCart = (productId) => {
+        axios.delete(NAME_API.LOCALHOST + '/deleteCart', {
+            params: {
+                userId: userId,
+                productId: productId
+            }
+        })
+            .then(response => {
+                console.log(response.data.message);
+                setQuantityInCart(prev => prev - 1);
+            })
+            .catch(err => {
+                console.log("Error delete cart" + err)
+            })
+    }
 
     const renderItem = ({ item, index }) => {
         return (
@@ -106,19 +62,22 @@ const CartItem = () => {
                     <View style={styles.item}>
                         <View style={styles.cartItemImageContainer}>
                             <Image
-                                source={item.image}
-                                alt={item.name}
+                                source={{ uri: item.product.thumbnail }}
+                                alt={item.product.title}
                                 style={styles.cartItemImage}
                             />
                         </View>
                         <View style={styles.cartItemContent}>
                             <Text style={styles.cartItemName} numberOfLines={2} ellipsizeMode='tail'>
-                                {item.name}
+                                {item.product.title}
                             </Text>
                             <Text style={styles.cartItemPrice}>
-                                ${item.price}
+                                ${item.product.price}
                             </Text>
-                            {/* <NumericInput
+                            <Text style={styles.cartItemSize}>
+                                Size: {item.size}
+                            </Text>
+                            <NumericInput
                                 value={item.quantity}
                                 onChange={(value) => updateQuantity(index, value)}
                                 totalWidth={100}
@@ -132,7 +91,10 @@ const CartItem = () => {
                                 textColor={Colors.black}
                                 iconStyle={{ color: Colors.white }}
                                 rightButtonBackgroundColor={Colors.main}
-                                leftButtonBackgroundColor={Colors.main} /> */}
+                                leftButtonBackgroundColor={Colors.main} />
+                            <Text style={styles.totalPrice}>
+                                Total: ${(item.product.price * item.quantity).toFixed(2)}
+                            </Text>
                         </View>
                     </View>
                 </View>
@@ -140,9 +102,12 @@ const CartItem = () => {
         )
     };
 
-    const renderHiddenItem = () => {
+    const renderHiddenItem = (productId) => {
         return (
-            <TouchableOpacity style={styles.iconDeleteContainer}>
+            <TouchableOpacity
+                style={styles.iconDeleteContainer}
+                onPress={() => deleteCart(productId)}
+            >
                 <View style={styles.iconDeletePosition}>
                     <Icon name='trash-outline' style={styles.iconDelete} />
                 </View>
@@ -150,30 +115,36 @@ const CartItem = () => {
         )
     };
 
+    useEffect(() => {
+        getCarts();
+    }, [quantityInCart]);
+
+    useEffect(() => {
+        if (items)
+            calculateTotalPrice();
+    }, [items]);
+
     return (
-        <View style={styles.cartItemContainer}>
-            <SwipeListView
-                rightOpenValue={-50}
-                previewRowKey='0'
-                previewOpenValue={-40}
-                previewOpenDelay={3000}
-                data={items}
-                renderHiddenItem={renderHiddenItem}
-                renderItem={renderItem}
-                showsVerticalScrollIndicator={false}
-            />
-        </View>
+        items ? <SwipeListView
+            rightOpenValue={-50}
+            previewRowKey='0'
+            previewOpenValue={-40}
+            previewOpenDelay={3000}
+            data={items}
+            keyExtractor={item => item.product._id}
+            renderHiddenItem={({ item }) => renderHiddenItem(item.product._id)}
+            renderItem={renderItem}
+            showsVerticalScrollIndicator={false}
+        /> : <Loading />
     )
 };
 
 export default CartItem;
 
-// Các phần styles và các phần code khác không thay đổi
-
 
 const styles = StyleSheet.create({
     itemContainer: {
-        marginLeft: 20,
+        marginHorizontal: 10,
         marginBottom: 15,
     },
     item: {
@@ -194,8 +165,9 @@ const styles = StyleSheet.create({
         height: 120,
     },
     cartItemImage: {
-        width: '80%', // Giả sử hình ảnh chiếm 80% chiều rộng của cartItemImageContainer
+        width: '100%',
         resizeMode: 'contain',
+        height: "100%",
     },
     cartItemContent: {
         width: '70%',
@@ -210,7 +182,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
     cartItemPrice: {
-        color: Colors.lightBlack,
+        color: Colors.red,
         fontWeight: 'bold',
     },
     iconDeleteContainer: {
@@ -222,6 +194,7 @@ const styles = StyleSheet.create({
         marginLeft: 'auto',
         justifyContent: 'center',
         alignItems: 'center',
+        marginHorizontal: 10,
     },
     iconDeletePosition: {
         alignItems: 'center',
@@ -233,4 +206,11 @@ const styles = StyleSheet.create({
     cartItemContainer: {
         marginRight: 10,
     },
+    totalPrice: {
+        position: 'absolute',
+        right: 10,
+        top: 70,
+        fontSize: 16,
+        fontWeight: 'bold',
+    }
 })
