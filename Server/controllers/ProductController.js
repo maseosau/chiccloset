@@ -58,12 +58,12 @@ class ProductController {
 
             if (!products || products.length === 0) {
                 return res.status(404).json({
-                    message: 'Không tìm thấy sản phẩm có category là "áo"',
+                    message: `Không tìm thấy sản phẩm có category là ${category}`,
                 });
             }
 
             res.status(200).json({
-                message: 'Danh sách sản phẩm có category "áo"',
+                message: `Danh sách sản phẩm có category ${category}`,
                 products: products,
             });
         } catch (error) {
