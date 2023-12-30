@@ -8,5 +8,6 @@ router.post('/login', UserController.login)
 router.put('/update/:userId', UserController.updateInfomation)
 router.get('/getInformation/:userId', UserController.getUserInformation)
 router.get('/getOrderInformation/:userId', UserController.getOrderInformation)
+router.post('/verifyOTP', UserController.verifyOTP)
 
 module.exports = router;

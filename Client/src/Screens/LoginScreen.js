@@ -2,10 +2,9 @@ import React, { useState, useEffect } from "react";
 import Colors from "../color";
 import InputField from "../Components/InputField";
 import Btn from "../Components/Btn";
-import { View, Text, Image, TouchableOpacity, StyleSheet, Alert } from "react-native"
+import { View, Text, Image, TouchableOpacity, StyleSheet, Alert, ToastAndroid } from "react-native"
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import CheckBox from "expo-checkbox";
-import Icon from 'react-native-vector-icons/Ionicons';
 import { useAuth } from "../contexts/authContext";
 import axios from 'axios';
 import { NAME_API } from "../config/ApiConfig";
@@ -14,12 +13,16 @@ import { jwtDecode } from "jwt-decode";
 import "core-js/stable/atob";
 
 export default function LoginScreen() {
-    const {setUserId, isLoggedIn, setIsLoggedIn} = useAuth();
+    const {setUserId, setIsLoggedIn} = useAuth();
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('');
     const [isCheckbox, setIsCheckbox] = useState(false);
     const [isVisiblePassword, setIsVisiblePassword] = useState(true);
     const navigation = useNavigation();
+
+    const errFeature = () => {
+        ToastAndroid.show('This feature is under development', ToastAndroid.SHORT);
+    }
 
     useEffect(() => {
         const loadRememberMe = async () => {
@@ -61,12 +64,19 @@ export default function LoginScreen() {
                     }
                 }
                 else {
-                    Alert.alert("Login failed", "Incorrect username or passwordddddddddddd")
+                    Alert.alert("Login failed", "Incorrect username or password")
                 }
             })
-            .catch(error => {
-                console.log(error)
-                Alert.alert("Login failed", "Incorrect username or password")
+            .catch(err => {
+                console.log(err);
+                if (err.response && err.response.data && err.response.data.message) {
+                    // If there's a meaningful error message in the response from the server
+                    Alert.alert("Login failed", err.response.data.message)
+                } else {
+                    // If the error object doesn't contain a specific message, display a generic error
+                    Alert.alert("Login failed", "Incorrect username or password")
+                }
+                
             });
     }
 
@@ -100,7 +110,7 @@ export default function LoginScreen() {
                         Remember me
                     </Text>
                 </View>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => errFeature()}>
                     <Text style={styles.forgotPassword}>Forgot Password?</Text>
                 </TouchableOpacity>
 
@@ -111,8 +121,8 @@ export default function LoginScreen() {
                     Or login with
                 </Text>
                 <View style={styles.loginSocial}>
-                    <Btn icon="logo-facebook" text="Facebook" bgColor={Colors.blue} />
-                    <Btn icon="logo-google" text="Google" bgColor={Colors.red} />
+                    <Btn icon="logo-facebook" text="Facebook" bgColor={Colors.blue} onPress={() => errFeature()}/>
+                    <Btn icon="logo-google" text="Google" bgColor={Colors.red} onPress={() => errFeature()}/>
                 </View>
             </View>
             <View style={styles.registerContainer}>
@@ -138,9 +148,9 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.subGreen
     },
     loginLogo: {
-        width: 150,
-        height: 150,
-        borderRadius: 75,
+        width: 200,
+        height: 200,
+        borderRadius: 100,
     },
     loginHeader: {
         fontSize: 24,

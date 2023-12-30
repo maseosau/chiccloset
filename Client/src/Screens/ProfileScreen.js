@@ -77,7 +77,7 @@ export default function ProfileScreen() {
             const response = await axios.put(NAME_API.LOCALHOST + `/update/${userId}`, {
                 image: image ? image : '',
             });
-            console.log(response.data.message);
+            // console.log(response.data.message);
         } catch (err) {
             console.log("Error update avatar " + err);
         }
@@ -117,6 +117,9 @@ export default function ProfileScreen() {
                 }}>
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
+                        <Icon name="close" style={styles.modalCloseIcon}
+                            onPress={() => setModalVisible(false)}
+                        />
                         <Text style={styles.modalText}>
                             Profile Photo
                         </Text>
@@ -257,7 +260,7 @@ const styles = StyleSheet.create({
         marginTop: 22,
     },
     modalView: {
-        width: "80%",
+        width: "90%",
         margin: 20,
         backgroundColor: 'white',
         borderRadius: 20,
@@ -295,5 +298,11 @@ const styles = StyleSheet.create({
     btnIcon: {
         color: Colors.main,
         fontSize: 40,
+    },
+    modalCloseIcon: {
+        position: 'absolute',
+        fontSize: 30,
+        top: 10,
+        right: 10,
     }
 })

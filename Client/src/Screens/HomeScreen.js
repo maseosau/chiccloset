@@ -54,7 +54,7 @@ function HomeScreen() {
         data={collections}
         renderItem={renderCollectionItem}
         keyExtractor={(item, index) => index.toString()}
-      // ListHeaderComponent={<HomeCarousel />}
+        ListHeaderComponent={<HomeCarousel />}
       />
     </View>
   );
