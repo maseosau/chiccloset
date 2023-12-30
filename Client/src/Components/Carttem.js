@@ -157,12 +157,12 @@ const styles = StyleSheet.create({
     },
     cartItemImageContainer: {
         width: '25%',
-        backgroundColor: Colors.deepGray,
+        backgroundColor: "#E5E6E8",
         alignItems: 'center',
         justifyContent: 'center',
         borderTopLeftRadius: 15,
         borderBottomLeftRadius: 15,
-        height: 120,
+        height: 130,
     },
     cartItemImage: {
         width: '100%',
