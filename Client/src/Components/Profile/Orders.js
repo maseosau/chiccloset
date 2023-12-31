@@ -82,7 +82,7 @@ const Orders = () => {
                                         paddingHorizontal: 2
                                     }}
                                 >
-                                    <Text style={{ color: Colors.white, textAlign: 'center' }}>${order.totalPrice}</Text>
+                                    <Text style={{ color: Colors.white, textAlign: 'center' }}>${order.totalPrice.toFixed(2)}</Text>
                                 </View>
                             </View>
                         </TouchableOpacity>
