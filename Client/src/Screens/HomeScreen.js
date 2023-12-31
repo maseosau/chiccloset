@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, Text, ScrollView, SafeAreaView, StatusBar, FlatList } from "react-native";
+import { View, Text, FlatList, StyleSheet } from "react-native";
 import Colors from "../color";
 import HomeProducts from "../Components/HomeProducts";
 import HomeSearch from "../Components/HomeSearch";
@@ -48,16 +48,23 @@ function HomeScreen() {
   }, [])
 
   return (
-    <>
+    <View style={styles.homeContainer}>
       <HomeSearch />
       <FlatList
         data={collections}
         renderItem={renderCollectionItem}
         keyExtractor={(item, index) => index.toString()}
-      // ListHeaderComponent={<HomeCarousel />}
+        ListHeaderComponent={<HomeCarousel />}
       />
-    </>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  homeContainer: {
+    flex: 1,
+    backgroundColor: Colors.subGreen,
+  }
+})
 
 export default HomeScreen;

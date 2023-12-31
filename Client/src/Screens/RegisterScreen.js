@@ -78,10 +78,11 @@ export default function RegisterScreen() {
             password: password,
         })
         .then((response) => {
-            if (response.status === 200) {
+            if (response.status === 201) {
                 // Registration successful, navigate to login screen or perform necessary actions
-                Alert.alert('Register successfully', 'You can now log in.');
-                // navigation.navigate('Login'); // Assuming 'navigation' is available
+                Alert.alert('Register successfully', 'You must verify to login', [
+                    { text: 'OK', onPress: () => navigation.navigate('VerifyScreen', {email: userData.email}) }
+                ]);
             } else {
                 Alert.alert('Register failed', response.data.message || 'Unknown error occurred');
             }
@@ -150,9 +151,9 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.subGreen
     },
     registerLogo: {
-        width: 150,
-        height: 150,
-        borderRadius: 75,
+        width: 200,
+        height: 200,
+        borderRadius: 100,
     },
     registerHeader: {
         fontSize: 24,

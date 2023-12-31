@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Image, View, Text, ScrollView, StyleSheet } from "react-native";
+import { Image, View, Text, ScrollView, StyleSheet, ToastAndroid } from "react-native";
 import Colors from "../color";
 import NumericInput from "react-native-numeric-input";
 import Btn from "../Components/Btn";
@@ -10,38 +10,61 @@ import axios from "axios";
 import { NAME_API } from "../config/ApiConfig";
 import Rating from "../Components/Rating";
 import Loading from "../Components/Loading";
+import { useAuth } from "../contexts/authContext";
+import { useCart } from "../contexts/cartContext";
 
 export default function ProductDetail() {
     const navigation = useNavigation();
     const route = useRoute();
+    const { userId } = useAuth();
+    const { setQuantityInCart } = useCart();
     const [product, setProduct] = useState(null);
+    const SIZES = ['S', 'M', 'L'];
+    const [size, setSize] = useState('S');
+    const [quantity, setQuantity] = useState(1);
+    const [similarProducts, setSimilarProducts] = useState(null);
 
-    // const [similarProducts, setSimilarProducts] = useState([
-    //     {
-    //         id: 1,
-    //         image: require('../../assets/favicon.png'),
-    //         name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-    //         price: 111,
-    //     },
-    //     {
-    //         id: 2,
-    //         image: require('../../assets/favicon.png'),
-    //         name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-    //         price: 111,
-    //     },
-    //     {
-    //         id: 3,
-    //         image: require('../../assets/favicon.png'),
-    //         name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-    //         price: 111,
-    //     },
-    //     {
-    //         id: 4,
-    //         image: require('../../assets/favicon.png'),
-    //         name: "Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text Text",
-    //         price: 111,
-    //     },
-    // ]);
+    const getSimilarProducts = async () => {
+        try {
+            const response = await axios.get(NAME_API.LOCALHOST + `/products/${product.category}`);
+            const items = response.data.products.filter(prd => prd._id !== product._id);
+            // console.log(response.data)
+            
+            // Shuffle the items array
+            const shuffledItems = items.sort(() => Math.random() - 0.5);
+
+            // Select the first 6 items from the shuffled array
+            const randomProducts = shuffledItems.slice(0, 6);
+            setSimilarProducts(randomProducts);
+        }
+        catch (err) {
+            console.log("Error get Similar Products " + err);
+        }
+    }
+
+    const addToCart = (product) => {
+        axios.post(NAME_API.LOCALHOST + '/addToCart', {
+            userId: userId,
+            productId: product._id,
+            quantity: quantity,
+            totalPrice: product.price * quantity,
+            size: size
+        })
+            .then(response => {
+                setQuantityInCart(prev => prev + 1);
+                ToastAndroid.show(response.data.message, ToastAndroid.SHORT);
+            })
+            .catch(err => {
+                console.log(err);
+                if (err.response && err.response.data && err.response.data.message) {
+                    // If there's a meaningful error message in the response from the server
+                    ToastAndroid.show(err.response.data.message, ToastAndroid.SHORT);
+                } else {
+                    // If the error object doesn't contain a specific message, display a generic error
+                    ToastAndroid.show('Something went wrong', ToastAndroid.SHORT);
+                }
+            });
+    }
 
     const getProduct = (productId) => {
         axios.get(NAME_API.LOCALHOST + `/product/${productId}`)
@@ -60,7 +83,12 @@ export default function ProductDetail() {
         getProduct(productId);
     }, [route.params.productId])
 
-    const [quantity, setQuantity] = useState(1);
+    useEffect(() => {
+        if (product) {
+            getSimilarProducts();
+        }
+    }, [product])
+
 
     return (
         product ?
@@ -91,6 +119,22 @@ export default function ProductDetail() {
                             rightButtonBackgroundColor={Colors.main}
                             leftButtonBackgroundColor={Colors.main} />
                     </View>
+                    <View style={styles.modalFlex}>
+                        <Text style={styles.modalText}>
+                            Size:
+                        </Text>
+                        {
+                            SIZES.map((s, index) => (
+                                <Btn
+                                    text={s}
+                                    key={index}
+                                    onPress={() => setSize(s)}
+                                    bgColor={s === size ? Colors.main : Colors.lightBlack}
+                                    color={s === size ? Colors.white : Colors.black}
+                                />
+                            ))
+                        }
+                    </View>
                     <Text style={styles.productDetailDescription}>
                         {product.description}
                     </Text>
@@ -113,9 +157,11 @@ export default function ProductDetail() {
                     <View style={styles.similarProductContainer}>
                         <Text style={styles.similarProducts}>Similar products</Text>
                     </View>
-                    {/* <ProductList products={similarProducts} /> */}
+                    {
+                        similarProducts ? <ProductList products={similarProducts} /> : <Loading />
+                    }
                 </ScrollView>
-                <Btn text="Add to Cart" width="100%" />
+                <Btn text="ADD TO CART" width="100%" onPress={() => addToCart(product)} />
             </View>
             : <Loading />
     )
@@ -194,5 +240,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         gap: 3,
         alignItems: 'center',
-    }
+    },
+    modalFlex: {
+        flexDirection: 'row',
+        width: '100%',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginVertical: 10,
+    },
 })

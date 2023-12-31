@@ -56,7 +56,7 @@ export default function ChangePasswordScreen() {
             return Alert.alert('Register failed', 'Password is not strong');
         }
 
-        axios.post(NAME_API.LOCALHOST + `/update/${userId}`, {
+        axios.put(NAME_API.LOCALHOST + `/update/${userId}`, {
             oldPassword: oldPassword,
             newPassword: newPassword,
         })
