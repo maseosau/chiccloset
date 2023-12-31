@@ -52,6 +52,8 @@ export default function PaymentScreen() {
       })
         .then(response => {
           ToastAndroid.show(response.data.message, ToastAndroid.SHORT);
+          // Cập nhật lại phương thức thanh toán mặc định sau khi thành công
+          handleChangeMethod(0);
         })
         .catch(err => {
           console.log(err);
