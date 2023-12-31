@@ -15,8 +15,6 @@ function PlaceOrderScreen() {
     const [consignee, setConsignee] = useState([]); 
     useEffect(() => {
         setConsignee(route.params.consignee);
-        console.log(route.params.consignee); 
-        // console.log(route.params); 
     },[])
     return (
         <View style={{ backgroundColor: Colors.subGreen, flex: 1, paddingTop: 20 }}>

@@ -32,7 +32,6 @@ function ShippingScreen() {
     try {
       const response = await axios.get(`${NAME_API.LOCALHOST}/getInformation/${userId}`);
       setConsignee(response.data.user);
-      console.log(consignee); 
   }
     catch{
       console.error(error);
