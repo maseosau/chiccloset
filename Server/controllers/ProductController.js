@@ -80,7 +80,6 @@ class ProductController {
             const products = await productsModel.find({
                 $or: [
                   { title: { $regex: keyword, $options: 'i' } }, 
-                  { description: { $regex: keyword, $options: 'i' } }, 
                   { category: { $regex: keyword, $options: 'i' } }, 
                 ],
               });
