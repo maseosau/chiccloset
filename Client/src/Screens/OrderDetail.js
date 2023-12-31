@@ -104,7 +104,7 @@ const OrderDetail = () => {
             borderRadius: 50,
             paddingHorizontal: 10,
           }}>
-            Total: ${order.totalPrice}
+            Total: ${order.totalPrice.toFixed(2)}
           </Text>
         </View>
       </View>
@@ -115,39 +115,6 @@ const OrderDetail = () => {
         data={order.products}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
-          // <TouchableOpacity>
-          //   <View style={styles.listContainer}>
-          //     <View
-          //       style={styles.productContainer}
-          //     >
-          //       <View style={styles.imageBox}>
-          //         <Image
-          //           source={{ uri: item.product.thumbnail }}
-          //           alt={item.product.title}
-          //           style={styles.imageStyles}
-          //         />
-          //       </View>
-          //       <View style={styles.productInfo}>
-          //         <Text
-          //           numberOfLines={1}
-          //           style={styles.productName}
-          //         >
-          //           {item.product.title}
-          //         </Text>
-          //         <Text style={styles.productPrice}>
-          //           Total: ${item.product.price * item.quantity}
-          //         </Text>
-          //       </View>
-          //       <View>
-          //         <TouchableOpacity
-          //           style={styles.quantityBox}
-          //         >
-          //           <Text style={styles.quantity}>{item.quantity}</Text>
-          //         </TouchableOpacity>
-          //       </View>
-          //     </View>
-          //   </View>
-          // </TouchableOpacity>
           <Pressable>
             <View style={styles.itemContainer}>
               <View style={styles.item}>

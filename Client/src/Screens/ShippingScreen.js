@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, TextInput, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, TextInput, TouchableOpacity, Alert } from "react-native";
 import Colors from "../color";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import Btn from "../Components/Btn";
@@ -14,7 +14,7 @@ const ShippingInputs = [
   },
   {
     label: "Phone Number",
-    type: "default",
+    type: "numeric",
   },
   {
     label: "Address",
@@ -57,6 +57,20 @@ function ShippingScreen() {
       if (text === "") consignee.address = defaultValue.address;
     }
   }
+  const handleSubmit = (consignee) => {
+    if(consignee.phoneNumber === ''){
+      Alert.alert('Invalid phone number','Please enter a phone number')
+    }
+    else if(consignee.phoneNumber.length < 10){
+      Alert.alert('Invalid address','Please enter a valid phone number')
+    }
+    else if(consignee.address === ''){
+      Alert.alert('Invalid address','Please enter a address')
+    }
+    else {
+      navigation.navigate("PlaceorderScreen", {consignee})
+    }
+  }
 
   return (
     <View style={{ flex: 1, paddingTop: 40, backgroundColor: Colors.main }}>
@@ -72,7 +86,7 @@ function ShippingScreen() {
           <View style={{ marginTop: 5 }}>
             {ShippingInputs.map((input, index) => (
               <View key={index} style={{ marginBottom: 15 }}>
-                <Text style={{ fontSize: 12, fontWeight: "bold" }}>{input.label}</Text>
+                <Text style={{ fontSize: 15, fontWeight: "bold" }}>{input.label}</Text>
                 <TextInput
                   style={{
                     borderWidth: 0.5,
@@ -87,11 +101,12 @@ function ShippingScreen() {
                   underlineColorAndroid="transparent" // for Android
                   placeholder={index === 0 ? consignee.fullname : (index === 1 ? consignee.phoneNumber : consignee.address)}
                   onChangeText={(text) => handleInputChange(index, text, consignee)}
+                  required
                 />
               </View>
             ))}
             <Btn text='CONTINUE' bgColor={Colors.main} color={Colors.white}
-              onPress={() => navigation.navigate("PlaceorderScreen", {consignee})}
+              onPress={() => {handleSubmit(consignee)}}
             />
           </View>
         </ScrollView>
