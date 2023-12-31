@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView, Pressable, ActivityIndicator } from "react-native";
+import { View, Text, ScrollView, Pressable, ActivityIndicator, TouchableOpacity } from "react-native";
 import Colors from "../../color";
 import { useAuth } from "../../contexts/authContext";
 import axios from "axios";
 import { NAME_API } from "../../config/ApiConfig";
+import { useNavigation, useRoute, useFocusEffect } from "@react-navigation/native";
 
 // Hàm chuyển đổi và định dạng ngày tháng
 const formatDate = (dateString) => {
@@ -13,6 +14,7 @@ const formatDate = (dateString) => {
 };
 
 const Orders = () => {
+    const navigation = useNavigation(); 
     const { userId } = useAuth();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -21,7 +23,6 @@ const Orders = () => {
             const response = await axios.get(`${NAME_API.LOCALHOST}/getOrderInformation/${userId}`);
             setOrders(response.data.orders);
             setLoading(false);
-            console.log(orders);
         } catch (error) {
             console.error(error);
             setLoading(false);
@@ -29,9 +30,13 @@ const Orders = () => {
         }
     };
     useEffect(() => {
-        getOrderInfomation(); console.log(orders);
+        getOrderInfomation();
     }, []);
-
+    useFocusEffect(
+        React.useCallback(() => {
+            getOrderInfomation();
+        }, [])
+      );
     if (loading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -44,39 +49,43 @@ const Orders = () => {
         <View style={{ height: "100%", backgroundColor: Colors.white, paddingVertical: 30, paddingHorizontal: 20 }}>
             <ScrollView showsVerticalScrollIndicator={false}>
                 {
-                    orders.map((order, index) => (
-                        <Pressable key={index}>
+                    orders.reverse().map((order, index) => (
+                        <TouchableOpacity key={index} onPress={() => navigation.navigate("Order Detail",{order})}>
                             <View
                                 style={{
                                     flexDirection: "row",
-                                    justifyContent: "space-between",
+                                    // justifyContent: "space-between",
                                     alignItems: "center",
                                     backgroundColor: order.paid ? Colors.deepGray : Colors.white, // Thay đổi màu nền dựa trên trạng thái paid
                                     paddingVertical: 10,
-                                    paddingHorizontal: 2,
+                                    paddingHorizontal: 5,
+                                    marginBottom: 5,
+                                    borderRadius: 5,
                                 }}
                             >
-                                <Text style={{ fontSize: 10, color: Colors.blue }} numberOfLines={1}>
+                                <Text style={{ fontSize: 12, color: Colors.blue, width: '20%', paddingHorizontal: 2 }} numberOfLines={1}>
                                     {order._id}
                                 </Text>
-                                <Text style={{ fontSize: 15, fontWeight: "bold", color: order.paid ? Colors.main : Colors.red }} numberOfLines={1}>
+                                <Text style={{ fontSize: 15, fontWeight: "bold", color: order.paid ? Colors.main : Colors.red, width: '25%', paddingHorizontal: 2 }} numberOfLines={1}>
                                     {order.paid ? "PAID" : "NOT PAID"}
                                 </Text>
-                                <Text style={{ fontSize: 13, fontStyle: "italic", color: Colors.black }} numberOfLines={1}>
+                                <Text style={{ fontSize: 13, fontStyle: "italic", color: Colors.black, width: '25%', paddingHorizontal: 2 }} numberOfLines={1}>
                                     {formatDate(order.orderDate)}
                                 </Text>
-                                <Pressable
+                                <View
                                     style={{
                                         paddingHorizontal: 7,
-                                        paddingVertical: 1.5,
+                                        paddingVertical: 2,
                                         borderRadius: 50,
                                         backgroundColor: order.paid ? Colors.main : Colors.red,
+                                        width: '30%',
+                                        paddingHorizontal: 2
                                     }}
                                 >
-                                    <Text style={{ color: Colors.white }}>${order.totalPrice}</Text>
-                                </Pressable>
+                                    <Text style={{ color: Colors.white, textAlign: 'center' }}>${order.totalPrice}</Text>
+                                </View>
                             </View>
-                        </Pressable>
+                        </TouchableOpacity>
                     ))
                 }
             </ScrollView>

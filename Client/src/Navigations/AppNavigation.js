@@ -22,6 +22,7 @@ import ChangePasswordScreen from '../Screens/ChangePasswordScreen';
 import CategoryScreen from '../Screens/CategoryScreen';
 import SearchScreen from '../Screens/SearchScreen';
 import { useCart } from '../contexts/cartContext';
+import OrderDetail from '../Screens/OrderDetail';
 
 const Tab = createBottomTabNavigator();
 
@@ -173,6 +174,8 @@ function StackNavigation() {
             <Stack.Screen name="Settings" component={SettingScreen}
             />
             <Stack.Screen name="Change Password" component={ChangePasswordScreen}
+            />
+            <Stack.Screen name="Order Detail" component={OrderDetail}
             />
         </Stack.Navigator>
     )

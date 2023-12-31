@@ -256,10 +256,10 @@ class UserControllers {
 
     async getOrderInformation(req, res, next) {
         try {
-            const userId = req.params.userId;
-
-            const orders = await orderModel.find({ user: userId });
-
+            const userId = req.params.userId; 
+        
+            const orders = await orderModel.find({user: userId}).populate('user').populate('products.product');
+        
             if (!orders) {
                 return res.status(404).json({
                     message: 'User not found',
@@ -277,6 +277,34 @@ class UserControllers {
             });
         }
     }
+
+    async payOrder (req, res, next) {
+        try {
+        //   const orderId = req.params.orderId; // Lấy orderId từ URL
+          const { paymentMethod, orderId } = req.body; // Lấy paymentMethod từ body của yêu cầu
+      
+          if (!orderId || paymentMethod === undefined) {
+            return res.status(400).json({ message: 'Invalid input' });
+          }
+      
+          const order = await orderModel.findById(orderId);
+      
+          if (!order) {
+            return res.status(404).json({ message: 'Order not found' });
+          }
+      
+          order.paymentMethod = paymentMethod;
+          order.paid = 1;
+          
+          await order.save();
+      
+          res.status(200).json({ message: 'Pay successfully', order });
+        } catch (error) {
+          console.error(error);
+          // Xử lý lỗi và trả về thông báo lỗi nếu có
+          res.status(500).json({ message: 'Internal server error' });
+        }
+    };
 }
 
 module.exports = new UserControllers;
