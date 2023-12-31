@@ -10,7 +10,7 @@ import { useCart } from '../contexts/cartContext';
 import { useAuth } from '../contexts/authContext';
 import { NAME_API } from '../config/ApiConfig';
 
-const CartItem = ({setTotalPrice}) => {
+const CartItem = ({setTotalPrice, setCartItems}) => {
     const [items, setItems] = useState(null);
     const { userId } = useAuth();
     const { quantityInCart, setQuantityInCart } = useCart();
@@ -19,6 +19,7 @@ const CartItem = ({setTotalPrice}) => {
             .then(response => {
                 setItems(response.data.carts)
                 // console.log(response.data.carts[0].product);
+                setCartItems(items);
             })
             .catch(err => {
                 console.log("Error get carts " + err);
@@ -37,6 +38,7 @@ const CartItem = ({setTotalPrice}) => {
         const updatedItems = [...items];
         updatedItems[index].quantity = newQuantity;
         setItems(updatedItems);
+        setCartItems(items);
     };
 
     const deleteCart = (productId) => {
@@ -49,6 +51,7 @@ const CartItem = ({setTotalPrice}) => {
             .then(response => {
                 console.log(response.data.message);
                 setQuantityInCart(prev => prev - 1);
+                getCarts();
             })
             .catch(err => {
                 console.log("Error delete cart" + err)

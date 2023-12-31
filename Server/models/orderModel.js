@@ -4,14 +4,14 @@ const Schema = mongoose.Schema;
 const Orders = new Schema({
     user: {
         type: Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Users',
         required: true
     },
     products: [
         {
             product: {
                 type: Schema.Types.ObjectId,
-                ref: 'Product',
+                ref: 'Products',
                 required: true
             },
             quantity: {
@@ -42,7 +42,19 @@ const Orders = new Schema({
     consigneePhone: {
         type: String,
         required: true
-    }
+    },
+    delivered: {
+        type: Number,
+        required: true
+    },
+    paid: {
+        type: Number,
+        required: true
+    },
+    paymentMethod: {
+        type: String,
+        // required: true
+    },
 });
 
 module.exports = mongoose.model('Orders', Orders);

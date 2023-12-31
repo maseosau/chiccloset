@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, TouchableOpacity, SafeAreaView } from "react-native"; // Import necessary components from react-native
 import Colors from "../color";
 import CartEmpty from "../Components/CartEmpty";
@@ -6,11 +6,33 @@ import CartItem from "../Components/Carttem";
 import Btn from "../Components/Btn";
 import { useNavigation } from "@react-navigation/native";
 import { useCart } from "../contexts/cartContext";
-
+import axios from 'axios';
+import { useAuth } from '../contexts/authContext';
+import { NAME_API } from '../config/ApiConfig';
 function CartScreen() {
+    const [cartItems, setCartItems] = useState(null);
     const navigation = useNavigation();
     const [totalPrice, setTotalPrice] = useState(0);
     const { quantityInCart } = useCart();
+    const { userId } = useAuth();
+    const getCarts = () => {
+        axios.get(NAME_API.LOCALHOST + `/carts/${userId}`)
+            .then(response => {
+                setCartItems(response.data.carts);
+                console.log(cartItems);
+            })
+            .catch(err => {
+                console.log("Error get carts " + err);
+            })
+    }
+    
+    useEffect(() => {
+        getCarts();
+    }, []);
+    useEffect(() => {
+        getCarts();
+    }, []);
+
     return (
         quantityInCart === 0 ? 
         <CartEmpty /> :
@@ -25,7 +47,7 @@ function CartScreen() {
                     Cart
                 </Text>
             </View>
-            <CartItem setTotalPrice={setTotalPrice}/>
+            <CartItem setTotalPrice={setTotalPrice} setCartItems={setCartItems}/>
             <View
                 style={{
                     marginTop: 5,
@@ -68,7 +90,7 @@ function CartScreen() {
                 // marginBottom: 25,
             }}
             >
-                <Btn bgColor={Colors.black} color={Colors.white} text='CHECKOUT' onPress={() => navigation.navigate("ShippingScreen")} />
+                <Btn bgColor={Colors.black} color={Colors.white} text='CHECKOUT' onPress={() => navigation.navigate("ShippingScreen", {data: cartItems})} />
             </View>
         </SafeAreaView>
     );
