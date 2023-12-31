@@ -3,8 +3,10 @@ import { View, Text, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons'
 import Colors from '../color';
 import Btn from './Btn';
+import { useNavigation } from '@react-navigation/native';
 
 export default function SeachNoResult() {
+    const navigation = useNavigation();
     return (
         <View style={styles.cartEmptyContainer}>
             <View style={styles.cartEmpty}>
@@ -15,7 +17,7 @@ export default function SeachNoResult() {
                     No results found
                 </Text>
             </View>
-            <Btn bgColor={Colors.black} color={Colors.white} text='START SHOPPING'/>
+            <Btn bgColor={Colors.black} color={Colors.white} text='START SHOPPING' onPress={() => navigation.navigate("HomeScreen")}/>
         </View>
     )
 }
