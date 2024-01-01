@@ -5,6 +5,7 @@ import { useAuth } from "../../contexts/authContext";
 import axios from "axios";
 import { NAME_API } from "../../config/ApiConfig";
 import { useNavigation, useRoute, useFocusEffect } from "@react-navigation/native";
+import OrdersEmpty from "./OrdersEmpty";
 
 // Hàm chuyển đổi và định dạng ngày tháng
 const formatDate = (dateString) => {
@@ -46,6 +47,8 @@ const Orders = () => {
     }
 
     return (
+        !orders.length ?
+        <OrdersEmpty /> :
         <View style={{ height: "100%", backgroundColor: Colors.white, paddingVertical: 30, paddingHorizontal: 20 }}>
             <ScrollView showsVerticalScrollIndicator={false}>
                 {

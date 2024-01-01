@@ -76,6 +76,31 @@ class CartController {
             res.status(500).json({ message: 'Internal server error' });
         }
     }
+
+    async updateQuantity(req, res, next) {
+        try {
+            const cartId = req.params.cartId;
+            const { quantity } = req.body;
+
+            const updateCart = await cartModel.findById(cartId);
+
+            if (updateCart) {
+                updateCart.quantity = quantity;
+            }
+
+            await updateCart.save();
+
+            res.status(201).json({
+                message: "Update quantity successfully"
+            });
+        }
+        catch (err) {
+            console.error(err);
+            res.status(500).json({
+                message: 'Internal server error'
+            });
+        }
+    }
 }
 
 module.exports = new CartController;
