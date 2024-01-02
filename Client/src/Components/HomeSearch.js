@@ -1,22 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { TextInput, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import Colors from "../color";
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
+import { NAME_API } from "../config/ApiConfig";
 
 export default function HomeSearch() {
     const [keyword, setKeyword] = useState('');
     const navigation = useNavigation();
+    const [allProducts, setAllProducts] = useState([]);
+
+    const getProducts = () => {
+        axios.get(NAME_API.LOCALHOST + '/products')
+            .then((response) => {
+                setAllProducts(response.data.products);
+            })
+            .catch(err => console.log(err))
+    }
+
+    useEffect(() => {
+        getProducts();
+    }, [])
+
     const handleSearch = () => {
         if (keyword.trim() !== '')
-            navigation.navigate('SearchScreen', { keyword });
+            navigation.navigate('SearchScreen', { keyword, allProducts });
     }
 
     return (
         <View style={styles.searchContainer}>
             <View style={styles.searchBar}>
-                <Icon name="search" style={styles.searchIcon} />
+                <Icon name="search" style={styles.searchIcon} onPress={handleSearch}/>
                 <TextInput placeholder="Product Name......"
                     style={styles.searchInput}
                     value={keyword}
