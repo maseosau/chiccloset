@@ -77,6 +77,24 @@ class CartController {
         }
     }
 
+    async deleteAllCart(req, res, next) {
+        try {
+            const userId = req.params.userId;
+
+            await cartModel.deleteMany({ user: userId });
+
+            res.status(200).json({
+                message: 'Cart items deleted successfully',
+            });
+        }
+        catch (err) {
+            console.error(err);
+            res.status(500).json({
+                message: 'Internal server error'
+            });
+        }
+    }
+
     async updateQuantity(req, res, next) {
         try {
             const cartId = req.params.cartId;

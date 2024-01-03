@@ -50,22 +50,18 @@ const PlaceOrderModel = ({ Products, Consignee }) => {
     calTotal(Products);
   })
 
-  const deleteCart = (productId) => {
-    axios.delete(NAME_API.LOCALHOST + '/deleteCart', {
-        params: {
-            userId: userId,
-            productId: productId
-        }
-    })
-        .then(response => {
-            console.log(response.data.message);
-            setQuantityInCart(prev => prev - 1);
-            // getCarts();
-        })
-        .catch(err => {
-            console.log("Error delete cart" + err)
-        })
+  const deleteCart = (userId) => {
+    axios.delete(`${NAME_API.LOCALHOST}/deleteAllCart/${userId}`)
+      .then(response => {
+        console.log(response.data.message);
+        // Giả sử setQuantityInCart là một hàm để cập nhật số lượng giỏ hàng trong trạng thái của bạn
+        setQuantityInCart(0);
+      })
+      .catch(err => {
+        console.log("Lỗi khi xóa giỏ hàng: " + err);
+      });
   }
+
   const currentDate = new Date();
 
   const currentDay = currentDate.getDate();
@@ -96,9 +92,7 @@ const PlaceOrderModel = ({ Products, Consignee }) => {
       })
         .then(response => {
           ToastAndroid.show(response.data.message, ToastAndroid.SHORT);
-          OrderInfo.products.map(item => {
-            deleteCart(item.product._id);
-          })
+          deleteCart(userId);
           navigation.navigate("CartScreen");
         })
         .catch(err => {
@@ -138,15 +132,15 @@ const PlaceOrderModel = ({ Products, Consignee }) => {
             }}
           >
             <Text style={{
-                  textAlign:'center',
-                  fontSize: 25,
-                  fontWeight: 'bold',
-                  marginBottom: 7,
-                  color: Colors.main,
-                }}
-              >
-                ORDER
-              </Text>
+              textAlign: 'center',
+              fontSize: 25,
+              fontWeight: 'bold',
+              marginBottom: 7,
+              color: Colors.main,
+            }}
+            >
+              ORDER
+            </Text>
             <View>
               {OrdersInfos.map((i, index) => (
                 <View
