@@ -47,18 +47,20 @@ function ShippingScreen() {
 
 
   const handleInputChange = (index, text, defaultValue) => {
+    const updatedConsignee = { ...consignee }; // Tạo một bản sao của object consignee
     if (index === 0) {
-      consignee.fullname = text;
-      if (text === "") consignee.fullname = defaultValue.fullname;
+      updatedConsignee.fullname = text;
+      if (text === "") updatedConsignee.fullname = defaultValue.fullname;
     }
     else if (index === 1) {
-      consignee.phoneNumber = text;
-      if (text === "") consignee.phoneNumber = defaultValue.phoneNumber;
+      updatedConsignee.phoneNumber = text;
+      if (text === "") updatedConsignee.phoneNumber = defaultValue.phoneNumber;
     }
     else {
-      consignee.address = text;
-      if (text === "") consignee.address = defaultValue.address;
+      updatedConsignee.address = text;
+      if (text === "") updatedConsignee.address = defaultValue.address;
     }
+    setConsignee(updatedConsignee); // Cập nhật giá trị state
   }
   const handleSubmit = (consignee) => {
     if (consignee.phoneNumber === '') {
@@ -151,6 +153,8 @@ function ShippingScreen() {
                   value={index === 0 ? consignee.fullname : (index === 1 ? consignee.phoneNumber : consignee.address)}
                   onChangeText={(text) => handleInputChange(index, text, consignee)}
                   // multiline={false}
+                  multiline // Cho phép nhiều dòng
+                  numberOfLines={index === 2 ? 2 : 1} // Số dòng tối đa hiển thị khi chưa được thu phóng
                   required
                 />
                 {

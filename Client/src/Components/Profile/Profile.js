@@ -202,6 +202,8 @@ const Profile = () => {
                 value={formValues[i.label]}
                 onChangeText={(text) => handleInputChange(i.label, text)}
                 editable={editable}
+                multiline // Cho phép nhiều dòng
+                numberOfLines={index === 3 ? 2 : 1} // Số dòng tối đa hiển thị khi chưa được thu phóng
 
               />
               {
@@ -214,14 +216,14 @@ const Profile = () => {
                     icon="location"
                     bgColor={Colors.blue}
                     text='Current'
-                    width='37%'
+                    width='38%'
                     onPress={() => handleLocateUser()}
                   />
                   <Btn
                     icon="map"
                     bgColor={Colors.blue}
                     text='Pick'
-                    width='37%'
+                    width='38%'
                     onPress={() => navigation.navigate('Map')}
                   />
                 </View>
