@@ -12,32 +12,19 @@ import { NAME_API } from "../config/ApiConfig";
 
 function PlaceOrderScreen() {
     const route = useRoute();
-    const [consignee, setConsignee] = useState([]); 
+    const [consignee, setConsignee] = useState([]);
     useEffect(() => {
         setConsignee(route.params.consignee);
-    },[])
+    }, [])
     return (
         <View style={{ backgroundColor: Colors.subGreen, flex: 1, paddingTop: 20 }}>
-            <View style={{ flex:1, flexDirection: "row", justifyContent: "space-around"}}>
-            {/* <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ paddingRight: 20, flex:1}} > */}
+            <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
                 <OrderInfo
                     title="CONSIGNEE"
                     subTitle={consignee.fullname}
                     text={"Phone: " + consignee.phoneNumber}
                     icon={<FontAwesome name="user" size={30} color={Colors.white} />}
                 />
-                {/* <OrderInfo
-                    title="SHIPPING INFO"
-                    subTitle="Shipping: Ma Seo Sau"
-                    text="Pay Method: PayPal"
-                    icon={
-                        <FontAwesome5
-                            name="shipping-fast"
-                            size={30}
-                            color={Colors.white}
-                        />
-                    }
-                /> */}
                 <OrderInfo
                     title="DELIVER TO"
                     subTitle="Address:"
@@ -46,21 +33,18 @@ function PlaceOrderScreen() {
                         <Ionicons
                             name="location-sharp"
                             size={30}
-                            color={Colors.white} 
+                            color={Colors.white}
                         />
                     }
                 />
-            {/* </ScrollView> */}
             </View>
             {/* Order Item */}
-            <View style={{ paddingHorizontal: 6, flex: 1, paddingBottom: 3 }}>
-                <Text style={{ fontWeight: "bold", fontSize: 20, marginBottom: 4 }}>
-                    PRODUCTS
-                </Text>
-                <OrderItem Products={consignee.products}/>
-                {/* Total */}
-                <PlaceOrderModel Products={consignee.products} Consignee={consignee}/>
-            </View>
+            <Text style={{ fontWeight: "bold", fontSize: 20, marginBottom: 4 }}>
+                PRODUCTS
+            </Text>
+            <OrderItem Products={consignee.products} />
+            {/* Total */}
+            <PlaceOrderModel Products={consignee.products} Consignee={consignee} />
         </View>
     );
 }
