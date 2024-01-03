@@ -4,7 +4,7 @@ import Colors from "../color";
 import CartEmpty from "../Components/CartEmpty";
 import CartItem from "../Components/Carttem";
 import Btn from "../Components/Btn";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useCart } from "../contexts/cartContext";
 import axios from 'axios';
 import { useAuth } from '../contexts/authContext';
@@ -19,7 +19,7 @@ function CartScreen() {
         axios.get(NAME_API.LOCALHOST + `/carts/${userId}`)
             .then(response => {
                 setCartItems(response.data.carts);
-                console.log(cartItems);
+                // console.log(cartItems);
             })
             .catch(err => {
                 console.log("Error get carts " + err);
@@ -29,10 +29,12 @@ function CartScreen() {
     useEffect(() => {
         getCarts();
     }, []);
-    useEffect(() => {
-        getCarts();
-    }, []);
 
+    useFocusEffect(
+        React.useCallback(() => {
+            getCarts();
+        }, [])
+      );
     return (
         quantityInCart === 0 ? 
         <CartEmpty /> :

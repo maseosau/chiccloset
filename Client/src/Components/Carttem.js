@@ -9,6 +9,7 @@ import Loading from './Loading';
 import { useCart } from '../contexts/cartContext';
 import { useAuth } from '../contexts/authContext';
 import { NAME_API } from '../config/ApiConfig';
+import { useFocusEffect } from "@react-navigation/native";
 
 const CartItem = ({setTotalPrice, setCartItems}) => {
     const [items, setItems] = useState(null);
@@ -19,7 +20,7 @@ const CartItem = ({setTotalPrice, setCartItems}) => {
             .then(response => {
                 setItems(response.data.carts)
                 // console.log(response.data.carts[0].product);
-                setCartItems(items);
+                setCartItems(response.data.carts);
             })
             .catch(err => {
                 console.log("Error get carts " + err);
@@ -34,11 +35,36 @@ const CartItem = ({setTotalPrice, setCartItems}) => {
         setTotalPrice(totalPrice);
     }
 
+    const saveUpdateQuantity = (cartId, newQuantity) => {
+        axios.post(NAME_API.LOCALHOST + `/updateQuantity/${cartId}`, {
+            quantity: newQuantity
+        })
+        .then(response => {
+            console.log(response.data.message);
+            // setQuantityInCart(prev => prev - 1);
+            // getCarts();
+        })
+        .catch(err => {
+            console.log("Error update quantity" + err)
+        })
+    }
+
     const updateQuantity = (index, newQuantity) => {
-        const updatedItems = [...items];
-        updatedItems[index].quantity = newQuantity;
-        setItems(updatedItems);
-        setCartItems(items);
+        if (typeof newQuantity == 'string' || newQuantity == '' || newQuantity === 0) {
+            const updatedItems = [...items];
+            const quantityDefault = 1;
+            updatedItems[index].quantity = quantityDefault;
+            setItems(updatedItems);
+            setCartItems(items);
+            saveUpdateQuantity(updatedItems[index]._id,quantityDefault);
+        }
+        else {
+            const updatedItems = [...items];
+            updatedItems[index].quantity = newQuantity;
+            setItems(updatedItems);
+            setCartItems(items);
+            saveUpdateQuantity(updatedItems[index]._id,newQuantity);
+        }
     };
 
     const deleteCart = (productId) => {
@@ -59,6 +85,8 @@ const CartItem = ({setTotalPrice, setCartItems}) => {
     }
 
     const renderItem = ({ item, index }) => {
+        const quantityInStock = item.product.sizes.find(sizeInCart => sizeInCart.size == item.size)
+        // console.log(quantityInStock.quantity);
         return (
             <Pressable>
                 <View style={styles.itemContainer}>
@@ -86,9 +114,9 @@ const CartItem = ({setTotalPrice, setCartItems}) => {
                                 totalWidth={100}
                                 totalHeight={30}
                                 iconSize={25}
-                                step={1}
+                                step={1} 
                                 minValue={1}
-                                maxValue={99}
+                                maxValue={quantityInStock ? quantityInStock.quantity : 99}
                                 valueType='integer'
                                 rounded
                                 textColor={Colors.black}
@@ -126,6 +154,12 @@ const CartItem = ({setTotalPrice, setCartItems}) => {
         if (items)
             calculateTotalPrice();
     }, [items]);
+    
+    useFocusEffect(
+        React.useCallback(() => {
+            getCarts();
+        }, [])
+      );
 
     return (
         items ? <SwipeListView

@@ -5,6 +5,8 @@ import Btn from "./Btn";
 import { useNavigation } from "@react-navigation/native";
 import { NAME_API } from "../config/ApiConfig";
 import axios from "axios";
+import { useAuth } from '../contexts/authContext';
+import { useCart } from '../contexts/cartContext';
 
 const OrdersInfos = [
   {
@@ -25,6 +27,9 @@ const OrdersInfos = [
 ];
 
 const PlaceOrderModel = ({ Products, Consignee }) => {
+  const { quantityInCart, setQuantityInCart } = useCart();
+  const [items, setItems] = useState(null);
+  const { userId } = useAuth();
   const [showModel, setShowModel] = useState(false);
   const navigation = useNavigation();
   const [consignee, setConsignee] = useState([]);
@@ -44,6 +49,23 @@ const PlaceOrderModel = ({ Products, Consignee }) => {
   useEffect(() => {
     calTotal(Products);
   })
+
+  const deleteCart = (productId) => {
+    axios.delete(NAME_API.LOCALHOST + '/deleteCart', {
+        params: {
+            userId: userId,
+            productId: productId
+        }
+    })
+        .then(response => {
+            console.log(response.data.message);
+            setQuantityInCart(prev => prev - 1);
+            // getCarts();
+        })
+        .catch(err => {
+            console.log("Error delete cart" + err)
+        })
+  }
   const currentDate = new Date();
 
   const currentDay = currentDate.getDate();
@@ -69,10 +91,14 @@ const PlaceOrderModel = ({ Products, Consignee }) => {
         consignee: OrderInfo.fullname,
         consigneePhone: OrderInfo.phoneNumber,
         shippingAddress: OrderInfo.address,
-        paymentMethod: OrderInfo.paymentMethod
+        paymentMethod: OrderInfo.paymentMethod,
+        productsWithFullInfo: OrderInfo.products
       })
         .then(response => {
           ToastAndroid.show(response.data.message, ToastAndroid.SHORT);
+          OrderInfo.products.map(item => {
+            deleteCart(item.product._id);
+          })
           navigation.navigate("CartScreen");
         })
         .catch(err => {

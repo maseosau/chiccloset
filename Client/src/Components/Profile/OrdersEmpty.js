@@ -1,20 +1,21 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons'
-import Colors from '../color';
-import Btn from './Btn';
+// import Icon from 'react-native-vector-icons/Ionicons';
+import { Entypo, AntDesign, FontAwesome, Ionicons, FontAwesome5, MaterialCommunityIcons } from "@expo/vector-icons";
+import Colors from '../../color';
+import Btn from '../Btn';
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
-export default function CartEmpty() {
+export default function OrdersEmpty() {
     const navigation = useNavigation();
     return (
-        <View style={styles.cartEmptyContainer}>
-            <View style={styles.cartEmpty}>
-                <View style={styles.cartIconBackground}>
-                    <Icon name='cart-outline' style={styles.cartIcon} />
+        <View style={styles.OrdersEmptyContainer}>
+            <View style={styles.OrdersEmpty}>
+                <View style={styles.ordersIconBackground}>
+                    <FontAwesome5 name='shopping-basket' style={styles.ordersIcon} />
                 </View>
-                <Text style={styles.cartEmptyText}>
-                    Cart is empty
+                <Text style={styles.OrdersEmptyText}>
+                    You have no orders
                 </Text>
             </View>
             <Btn bgColor={Colors.black} color={Colors.white} text='START SHOPPING' onPress={() => navigation.navigate("HomeScreen")}/>
@@ -23,18 +24,18 @@ export default function CartEmpty() {
 }
 
 const styles = StyleSheet.create({
-    cartEmptyContainer: {
+    OrdersEmptyContainer: {
         flex: 1,
         paddingHorizontal: 16,
         alignItems: 'center',
         justifyContent: 'center',
     },
-    cartEmpty: {
+    OrdersEmpty: {
         height: '90%',
         alignItems: 'center',
         justifyContent: 'center',
     },
-    cartIconBackground: {
+    ordersIconBackground: {
         width: 200,
         height: 200,
         backgroundColor: Colors.white,
@@ -42,11 +43,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    cartIcon: {
+    ordersIcon: {
         fontSize: 100,
         color: Colors.main,
     },
-    cartEmptyText: {
+    OrdersEmptyText: {
         fontWeight: 'bold',
         marginTop: 20,
         color: Colors.main,
