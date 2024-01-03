@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Modal } from "react-native";
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import Icon from "react-native-vector-icons/Ionicons"
 import Colors from "../color";
 import Btn from "../Components/Btn";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../contexts/authContext";
+import * as SecureStore from 'expo-secure-store';
 
 export default function SettingScreen() {
     const { isLoggedIn, setIsLoggedIn } = useAuth();
@@ -13,11 +13,11 @@ export default function SettingScreen() {
     const navigation = useNavigation();
     const removeToken = async () => {
         try {
-            await AsyncStorage.removeItem('userToken');
+            await SecureStore.deleteItemAsync('userToken');
             console.log('Token removed successfully.');
             setIsLoggedIn(false);
         } catch (error) {
-            console.error('Error removing token from AsyncStorage:', error);
+            console.error('Error removing token from SecureStore:', error);
         }
     };
 
