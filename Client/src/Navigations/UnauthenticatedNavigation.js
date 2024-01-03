@@ -3,6 +3,7 @@ import React from 'react';
 import LoginScreen from '../Screens/LoginScreen';
 import RegisterScreen from '../Screens/RegisterScreen';
 import VerifyScreen from '../Screens/VerifyScreen';
+import EnterEmailScreen from '../Screens/EnterEmailScreen';
 const Stack = createStackNavigator();
 
 export default function UnauthenticatedNavigation() {
@@ -16,6 +17,7 @@ export default function UnauthenticatedNavigation() {
             <Stack.Screen name="LoginScreen" component={LoginScreen} />
             <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
             <Stack.Screen name="VerifyScreen" component={VerifyScreen} />
+            <Stack.Screen name="EnterEmailScreen" component={EnterEmailScreen} />
         </Stack.Navigator>
     )
 }

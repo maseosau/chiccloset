@@ -112,7 +112,7 @@ export default function LoginScreen() {
                         Remember me
                     </Text>
                 </View>
-                <TouchableOpacity onPress={() => errFeature()}>
+                <TouchableOpacity onPress={() => navigation.navigate("EnterEmailScreen")}>
                     <Text style={styles.forgotPassword}>Forgot Password?</Text>
                 </TouchableOpacity>
 
