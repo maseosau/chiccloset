@@ -6,6 +6,7 @@ import axios from "axios";
 import { NAME_API } from "../config/ApiConfig";
 import { useAuth } from "../contexts/authContext";
 import Btn from "../Components/Btn";
+import { useNavigation } from "@react-navigation/native";
 
 export default function ChangePasswordScreen() {
     const [oldPassword, setOldPassword] = useState(null);
@@ -16,6 +17,7 @@ export default function ChangePasswordScreen() {
     const [visibleNewPassword, setVisibleNewPassword] = useState(true);
     const [visibleConfirmNewPassword, setVisibleConfirmNewPassword] = useState(true);
     const { userId } = useAuth();
+    const navigation = useNavigation();
 
     function isStrongPassword(password) {
         // Kiểm tra độ dài mật khẩu
@@ -62,7 +64,9 @@ export default function ChangePasswordScreen() {
         })
             .then(response => {
                 if (response.status === 200) {
-                    Alert.alert('Updated Successfully');
+                    Alert.alert('Updated Successfully', response.data.message, [
+                        {text: 'OK', onPress: () => {navigation.navigate('Profile')}}
+                    ]);
                 }
                 else {
                     Alert.alert('Updated Failed', response.data.message);
