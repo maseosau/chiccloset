@@ -77,7 +77,7 @@ const OrderDetail = () => {
         <Text style={styles.information}>Address: {order.shippingAddress}</Text>
         <Text style={styles.information}>Order Date: {order.orderDate}</Text>
         <Text style={styles.information}>
-          Payment Method: {order.paid === 1 ? order.paymentMethod : '(not paid)'}
+          Payment Method: {order.paid === 1 ? order.paymentMethod : '(unpaid)'}
         </Text>
         <Text style={styles.information}>
           Delivery Status: {order.delivered === 1 && order.paid === 1 ? 'Delivered' : 'Not delivery'}
@@ -92,7 +92,7 @@ const OrderDetail = () => {
             // textAlign: 'center',
             // borderRadius: 50,
           }}>
-            {order.paid ? 'PAID' : 'NOT PAID'}
+            {order.paid ? 'PAID' : 'UNPAID'}
           </Text>
           <Text style={{
             color: Colors.white,
