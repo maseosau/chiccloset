@@ -7,6 +7,7 @@ import HomeCarousel from "./src/Components/HomeCarousel";
 import { CartProvider } from "./src/contexts/cartContext";
 import VerifyScreen from "./src/Screens/VerifyScreen";
 import LoginScreen from "./src/Screens/LoginScreen";
+import { MapProvider } from "./src/contexts/mapContext";
 
 const Stack = createStackNavigator();
 
@@ -14,9 +15,10 @@ export default function App() {
   return (
     <AuthProvider>
       <CartProvider>
-      {/* <LoginScreen /> */}
-        <StatusBar />
-        <AppNavigation />
+        <MapProvider>
+          <StatusBar />
+          <AppNavigation />
+        </MapProvider>
       </CartProvider>
     </AuthProvider>
   );
