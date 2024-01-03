@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, ScrollView, StyleSheet, Alert, Modal } from "react-native";
+import * as Location from 'expo-location';
+import MapView, { Marker } from 'react-native-maps';
 import Colors from "../../color";
 import Btn from "../Btn";
 import { useAuth } from "../../contexts/authContext";
 import axios from "axios";
 import { NAME_API } from "../../config/ApiConfig";
 import Icon from "react-native-vector-icons/Ionicons"
+import { useNavigation } from "@react-navigation/native";
+import { useMap } from "../../contexts/mapContext";
 
 const Inputs = [
   {
@@ -30,17 +34,18 @@ const Profile = () => {
   const [editable, setEditable] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const { userId } = useAuth();
-  const [username, setUsername] = useState(null);
   const [fullname, setFullname] = useState(null);
   const [phoneNumber, setPhoneNumber] = useState(null);
   const [email, setEmail] = useState(null);
   const [address, setAddress] = useState(null);
+  const {location, setLocation} = useMap();
   const [formValues, setFormValues] = useState({
     'Full Name': fullname || '',
     'Phone Number': phoneNumber || '',
     'Email': email || '',
     'Address': address || '',
   });
+  const navigation = useNavigation();
 
   // Cập nhật giá trị từ useAuth() khi nó thay đổi
   useEffect(() => {
@@ -83,7 +88,7 @@ const Profile = () => {
   function validateEmail(email) {
     const emailPattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return emailPattern.test(email);
-}
+  }
 
   const getInfomation = async () => {
     try {
@@ -125,6 +130,43 @@ const Profile = () => {
         Alert.alert('Updated Failed', 'Something went wrong');
       })
   }
+  const handleLocateUser = async () => {
+    try {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('Permission to access location was denied');
+        return;
+      }
+
+      let currentLocation = await Location.getCurrentPositionAsync({});
+      console.log(currentLocation);
+      setLocation({
+        latitude: currentLocation.coords.latitude,
+        longitude: currentLocation.coords.longitude,
+      });
+    } catch (error) {
+      console.error('Error getting location:', error);
+    }
+  };
+
+  useEffect(() => {
+    const getAddressFromCoordinates = async () => {
+      try {
+        const api = 'AIzaSyDOONue1Xr4ihkImIMKQH4y2E5rnvtlPJ8';
+        const response = await fetch(
+          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${location.latitude},${location.longitude}&key=${api}`
+        );
+        const data = await response.json();
+        if (data.status === 'OK') {
+          setAddress(data.results[0].formatted_address);
+        }
+      } catch (error) {
+        console.error('Error fetching location details:', error);
+      }
+    };
+
+    location && getAddressFromCoordinates();
+  }, [location]);
 
   useEffect(() => {
     getInfomation();
@@ -137,7 +179,6 @@ const Profile = () => {
           {Inputs.map((i, index) => (
             <View key={index} style={{ marginBottom: 10 }}>
               <Text style={{ fontSize: 15, fontWeight: "bold" }}>{i.label}</Text>
-
               <TextInput
                 style={{
                   borderWidth: 0.5,
@@ -161,16 +202,30 @@ const Profile = () => {
                 value={formValues[i.label]}
                 onChangeText={(text) => handleInputChange(i.label, text)}
                 editable={editable}
+
               />
               {
                 formValues[i.label] !== '' ? null : <Icon name="close-circle" style={styles.iconCancel} />
               }
-              {/* {
-                i.type === "password" && formValues[i.label] !== '' ? (
-                  visiblePassword ? <Icon name="eye-outline" style={styles.iconEye} onPress={() => setVisiblePassword(!visiblePassword)} /> :
-                    <Icon name="eye-off-outline" style={styles.iconEye} onPress={() => setVisiblePassword(!visiblePassword)} />
-                ) : null
-              } */}
+              {
+                i.label === 'Address' && editable &&
+                <View style={styles.btnFlex}>
+                  <Btn
+                    icon="location"
+                    bgColor={Colors.blue}
+                    text='Current'
+                    width='37%'
+                    onPress={() => handleLocateUser()}
+                  />
+                  <Btn
+                    icon="map"
+                    bgColor={Colors.blue}
+                    text='Pick'
+                    width='37%'
+                    onPress={() => navigation.navigate('Map')}
+                  />
+                </View>
+              }
             </View>
           ))}
         </View>
@@ -206,12 +261,14 @@ const Profile = () => {
             color={Colors.white}
             text="CONFIRM"
             onPress={() => setModalVisible(true)}
+            width='45%'
           />
           <Btn
             bgColor={Colors.lightBlack}
             color={Colors.black}
             text="Cancel"
             onPress={() => setEditable(false)}
+            width='45%'
           />
         </View>
           :
@@ -220,6 +277,7 @@ const Profile = () => {
             color={Colors.white}
             text="UPDATE PROFILE"
             onPress={() => setEditable(true)}
+            
           />
       }
 
@@ -263,6 +321,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 10,
+    marginTop: 10,
   },
   textStyle: {
     color: 'white',
