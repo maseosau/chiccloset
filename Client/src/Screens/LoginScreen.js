@@ -3,7 +3,7 @@ import Colors from "../color";
 import InputField from "../Components/InputField";
 import Btn from "../Components/Btn";
 import { View, Text, Image, TouchableOpacity, StyleSheet, Alert, ToastAndroid } from "react-native"
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import * as SecureStore from 'expo-secure-store';
 import CheckBox from "expo-checkbox";
 import { useAuth } from "../contexts/authContext";
 import axios from 'axios';
@@ -27,7 +27,7 @@ export default function LoginScreen() {
     useEffect(() => {
         const loadRememberMe = async () => {
             try {
-                const userToken = await AsyncStorage.getItem('userToken');
+                const userToken = await SecureStore.getItemAsync('userToken');
                 if (userToken !== null) {
                     const decode = jwtDecode(userToken);
                     setUserId(decode.userId);
@@ -56,11 +56,13 @@ export default function LoginScreen() {
                     // Lưu token vào AsyncStorage
                     try {
                         if (isCheckbox) {
-                            await AsyncStorage.setItem('userToken', token);
+                            await SecureStore.setItemAsync('userToken', token, {
+                                accessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+                            });
                         }
                         setIsLoggedIn(true);
                     } catch (error) {
-                        console.error('Error saving token to AsyncStorage:', error);
+                        console.error('Error saving token to SecureStore:', error);
                     }
                 }
                 else {
@@ -110,7 +112,7 @@ export default function LoginScreen() {
                         Remember me
                     </Text>
                 </View>
-                <TouchableOpacity onPress={() => errFeature()}>
+                <TouchableOpacity onPress={() => navigation.navigate("EnterEmailScreen")}>
                     <Text style={styles.forgotPassword}>Forgot Password?</Text>
                 </TouchableOpacity>
 

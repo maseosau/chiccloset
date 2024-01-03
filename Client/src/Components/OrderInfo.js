@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: Colors.white,
         width: "45%",
-        height: "60%",
+        height: "100%",
         // flex: 1,
         // alignSelf: 'flex-start',
         paddingVertical: 10,

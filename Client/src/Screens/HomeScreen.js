@@ -18,12 +18,12 @@ function HomeScreen() {
   const collections = [
     {
       title: "Hot Deals",
-      sort: (a, b) => a.price - b.price,
+      sort: (a, b) => b.rating.rate - a.rating.rate,
       icon: require("../../assets/images/fire.png")
     },
     {
       title: "New Arrivals",
-      sort: (a, b) => b.rating.rate - a.rating.rate,
+      sort: (a, b) => b.create_at - a.create_at,
       icon: require("../../assets/images/medal.png")
     },
   ];

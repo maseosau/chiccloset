@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const userModel = require('../models/userModel');
 const orderModel = require('../models/orderModel');
 const nodemailer = require('nodemailer');
+const crypto = require('crypto');
 
 
 const sendOTPEmail = async (email, OTP) => {
@@ -19,7 +20,7 @@ const sendOTPEmail = async (email, OTP) => {
         from: 'schiccloset@gmail.com',
         to: email,
         subject: 'Xác thực email',
-        text: `Mã xác thực của bạn là: ${OTP}`
+        html: `<p>Mã xác thực của bạn là: <strong>${OTP}</strong></p>`
     };
 
     try {
@@ -29,6 +30,44 @@ const sendOTPEmail = async (email, OTP) => {
         console.error("Error sending OTP:", error);
     }
 }
+
+const resetPassword = async (email, password) => {
+    const transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: 'schiccloset@gmail.com',
+            pass: 'kchrsiecgeqdicoa'
+        }
+    });
+
+    const mailOptions = {
+        from: 'schiccloset@gmail.com',
+        to: email,
+        subject: 'Reset Password',
+        html: `<p>Mật khẩu mới của bạn là: <strong>${password}</strong></p>`
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log("Password is sent successfully");
+    } catch (error) {
+        console.error("Error sending OTP:", error);
+    }
+}
+
+const generateRandomPassword = () => {
+    const length = 8;
+    const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_+=~`[]{}|;:,.<>?';
+    
+    let password = '';
+    for (let i = 0; i < length; i++) {
+      const randomIndex = crypto.randomInt(characters.length);
+      password += characters[randomIndex];
+    }
+  
+    return password;
+  }
+
 class UserControllers {
     async login(req, res, next) {
         try {
@@ -128,13 +167,39 @@ class UserControllers {
         }
     }
 
+    async getOTP(req, res, next) {
+        try {
+            const { email } = req.body;
+
+            const user = await userModel.findOne({ email: email });
+
+            const OTP = Math.floor(100000 + Math.random() * 900000).toString();
+            const expireAt = new Date(Date.now() + 10 * 60 * 1000);
+
+            user.OTP.otp = OTP;
+            user.OTP.expireAt = expireAt;
+
+            await user.save();
+
+            sendOTPEmail(email, OTP);
+
+            res.status(200).json({
+                message: "Get OTP successfully"
+            });
+        }
+        catch (err) {
+            console.error(err);
+            res.status(500).json({
+                message: 'Internal server error'
+            });
+        }
+    }
+
     async verifyOTP(req, res, next) {
         try {
             const { email, userOTP } = req.body;
 
             const user = await userModel.findOne({ email: email });
-
-            console.log(1);
 
             if (!user) {
                 return res.status(404).json({
@@ -150,10 +215,8 @@ class UserControllers {
 
             if (user.OTP.expireAt < new Date()) {
                 // Xử lý khi OTP đã hết hạn
-                await userModel.findOneAndDelete({ email: email });
-
                 return res.status(401).json({
-                    message: "OTP has expired. User information deleted. Please register again"
+                    message: "OTP has expired. Please send email again."
                 });
             }
 
@@ -163,6 +226,37 @@ class UserControllers {
             res.status(200).json({
                 message: 'Verify email successfully',
                 user: user
+            });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({
+                message: 'Internal server error'
+            });
+        }
+    }
+
+    async sendPassword(req, res, next) {
+        try {
+            const { email } = req.body;
+
+            const user = await userModel.findOne({ email: email });
+
+            if (!user) {
+                return res.status(404).json({
+                    message: 'User not found',
+                });
+            }
+
+            const password = await generateRandomPassword();
+            const hashPassword = await bcryptjs.hash(password, 8);
+            user.password = hashPassword;
+
+            await user.save();
+
+            resetPassword(email, password);
+
+            res.status(200).json({
+                message: 'Reset password successfully. Please check email to get new password!',
             });
         } catch (err) {
             console.error(err);
@@ -256,10 +350,10 @@ class UserControllers {
 
     async getOrderInformation(req, res, next) {
         try {
-            const userId = req.params.userId; 
-        
-            const orders = await orderModel.find({user: userId}).populate('user').populate('products.product');
-        
+            const userId = req.params.userId;
+
+            const orders = await orderModel.find({ user: userId }).populate('user').populate('products.product');
+
             if (!orders) {
                 return res.status(404).json({
                     message: 'User not found',
@@ -278,31 +372,31 @@ class UserControllers {
         }
     }
 
-    async payOrder (req, res, next) {
+    async payOrder(req, res, next) {
         try {
-        //   const orderId = req.params.orderId; // Lấy orderId từ URL
-          const { paymentMethod, orderId } = req.body; // Lấy paymentMethod từ body của yêu cầu
-      
-          if (!orderId || paymentMethod === undefined) {
-            return res.status(400).json({ message: 'Invalid input' });
-          }
-      
-          const order = await orderModel.findById(orderId);
-      
-          if (!order) {
-            return res.status(404).json({ message: 'Order not found' });
-          }
-      
-          order.paymentMethod = paymentMethod;
-          order.paid = 1;
-          
-          await order.save();
-      
-          res.status(200).json({ message: 'Pay successfully', order });
+            //   const orderId = req.params.orderId; // Lấy orderId từ URL
+            const { paymentMethod, orderId } = req.body; // Lấy paymentMethod từ body của yêu cầu
+
+            if (!orderId || paymentMethod === undefined) {
+                return res.status(400).json({ message: 'Invalid input' });
+            }
+
+            const order = await orderModel.findById(orderId);
+
+            if (!order) {
+                return res.status(404).json({ message: 'Order not found' });
+            }
+
+            order.paymentMethod = paymentMethod;
+            order.paid = 1;
+
+            await order.save();
+
+            res.status(200).json({ message: 'Pay successfully', order });
         } catch (error) {
-          console.error(error);
-          // Xử lý lỗi và trả về thông báo lỗi nếu có
-          res.status(500).json({ message: 'Internal server error' });
+            console.error(error);
+            // Xử lý lỗi và trả về thông báo lỗi nếu có
+            res.status(500).json({ message: 'Internal server error' });
         }
     };
 }

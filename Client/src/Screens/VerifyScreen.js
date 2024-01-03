@@ -6,6 +6,7 @@ import Colors from "../color";
 import Btn from "../Components/Btn";
 import axios from "axios";
 import { NAME_API } from "../config/ApiConfig";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 export default function VerifyScreen() {
     const navigation = useNavigation();
@@ -27,7 +28,23 @@ export default function VerifyScreen() {
                     Alert.alert('Successfully ', response.data.message, [
                         { text: 'OK', onPress: () => navigation.navigate('LoginScreen') }
                     ])
-                    console.log(response.data.user);
+                } else {
+                    Alert.alert('Failed', response.data.message || 'Unknown error occurred');
+                }
+            })
+            .catch(err => {
+                console.log(err);
+                Alert.alert('Failed', 'Something went wrong');
+            })
+    }
+
+    const getOTP = () => {
+        axios.post(NAME_API.LOCALHOST + '/getOTP', {
+            email: email
+        })
+            .then(response => {
+                if (response.status === 200) {
+                    Alert.alert('Successfully ', response.data.message)
                 } else {
                     Alert.alert('Failed', response.data.message || 'Unknown error occurred');
                 }
@@ -49,6 +66,12 @@ export default function VerifyScreen() {
                 <Text style={styles.email}>
                     {email}.
                 </Text>
+            </Text>
+            <Text style={styles.contentText}>
+                Didn't receive the code? {' '}
+                    <Text style={styles.btnText} onPress={() => getOTP()}>
+                        Resend code.
+                    </Text>
             </Text>
             <Text style={styles.codeText}>
                 Enter code
@@ -95,5 +118,15 @@ const styles = StyleSheet.create({
     },
     email: {
         fontWeight: 'bold',
+        fontSize: 16,
+    },
+    btnText: {
+        fontWeight: 'bold',
+        color: Colors.blue,
+        fontSize: 16,
+    },
+    btn: {
+        margin: 0,
+        padding: 0,
     }
 });

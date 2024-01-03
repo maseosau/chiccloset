@@ -3,7 +3,7 @@ import { FlatList, Pressable, Text, View, Image, TouchableOpacity, StyleSheet } 
 // import Products from "../data/Products";
 import Colors from "../color";
 
-const OrderItem = ({Products}) => {
+const OrderItem = ({ Products }) => {
   // console.log(Products.product)
   return (
     <FlatList
@@ -46,33 +46,33 @@ const OrderItem = ({Products}) => {
         //   </View>
         // </TouchableOpacity>
         <Pressable>
-        <View style={styles.itemContainer}>
-          <View style={styles.item}>
-            <View style={styles.cartItemImageContainer}>
-              <Image
-                source={{ uri: item.product.thumbnail }}
-                alt={item.product.title}
-                style={styles.cartItemImage}
-              />
-            </View>
-            <View style={styles.cartItemContent}>
-              <Text style={styles.cartItemName} numberOfLines={2} ellipsizeMode='tail'>
-                {item.product.title}
-              </Text>
-              <Text style={styles.cartItemPrice}>
-                ${item.product.price}
-              </Text>
-              <Text style={styles.cartItemSize}>
-                Size: {item.size}
-              </Text>
-              <Text>Quantity: {item.quantity}</Text>
-              <Text style={styles.totalPrice}>
-                Total: ${(item.product.price * item.quantity).toFixed(2)}
-              </Text>
+          <View style={styles.itemContainer}>
+            <View style={styles.item}>
+              <View style={styles.cartItemImageContainer}>
+                <Image
+                  source={{ uri: item.product.thumbnail }}
+                  alt={item.product.title}
+                  style={styles.cartItemImage}
+                />
+              </View>
+              <View style={styles.cartItemContent}>
+                <Text style={styles.cartItemName} numberOfLines={2} ellipsizeMode='tail'>
+                  {item.product.title}
+                </Text>
+                <Text style={styles.cartItemPrice}>
+                  ${item.product.price}
+                </Text>
+                <Text style={styles.cartItemSize}>
+                  Size: {item.size}
+                </Text>
+                <Text>Quantity: {item.quantity}</Text>
+                <Text style={styles.totalPrice}>
+                  Total: ${(item.product.price * item.quantity).toFixed(2)}
+                </Text>
+              </View>
             </View>
           </View>
-        </View>
-      </Pressable>
+        </Pressable>
       )}
     />
   );
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
   // quantity: { 
   //   color: Colors.white 
   // },
-  
+
   itemContainer: {
     // marginHorizontal: 10,
     // marginTop: 10,
