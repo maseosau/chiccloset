@@ -169,6 +169,7 @@ const Profile = () => {
   }, [location]);
 
   useEffect(() => {
+    setLocation(null);
     getInfomation();
   }, [])
 
